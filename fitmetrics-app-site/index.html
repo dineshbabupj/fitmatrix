@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitMetrics — Offline Workout Tracker & Health Calculator App</title>
+  <meta name="description" content="FitMetrics is your all-in-one offline workout tracker, rest timer, and health metrics calculator (BMI, BMR, Body Fat, Ideal Weight). Private & fast.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #0B0F19;
+      --bg-surface: #131B2E;
+      --bg-card: #1C2640;
+      --primary: #4CAF50;
+      --primary-accent: #66BB6A;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --border-color: #273554;
+      --gradient-brand: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main); line-height: 1.6; }
+    h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
+
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color); padding: 16px 0;
+    }
+    .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary-accent); display: flex; align-items: center; gap: 10px; }
+
+    .btn-download {
+      background: var(--gradient-brand); color: #FFF; padding: 12px 24px;
+      border-radius: 30px; font-weight: 700; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-download:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4); }
+
+    .hero { padding: 80px 0 60px; text-align: center; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(76, 175, 80, 0.12); border: 1px solid rgba(76, 175, 80, 0.3);
+      color: var(--primary-accent); padding: 6px 16px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 24px;
+    }
+    .hero-title { font-size: 3rem; line-height: 1.2; margin-bottom: 20px; font-weight: 800; }
+    .hero-sub { font-size: 1.2rem; color: var(--text-muted); max-width: 750px; margin: 0 auto 36px; }
+
+    .store-buttons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
+    .store-btn {
+      background: var(--bg-surface); border: 1px solid var(--border-color);
+      color: #FFF; padding: 14px 28px; border-radius: 14px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 14px; text-align: left;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .store-btn:hover { border-color: var(--primary-accent); background: var(--bg-card); }
+    .store-btn i { font-size: 1.8rem; color: var(--primary-accent); }
+    .store-btn-text small { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+    .store-btn-text strong { font-size: 1rem; }
+
+    /* Features Grid */
+    section { padding: 80px 0; border-top: 1px solid var(--border-color); }
+    .section-title { font-size: 2.2rem; text-align: center; margin-bottom: 12px; }
+    .section-sub { text-align: center; color: var(--text-muted); max-width: 600px; margin: 0 auto 56px; }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; }
+    .card {
+      background: var(--bg-surface); border: 1px solid var(--border-color);
+      border-radius: 20px; padding: 32px; transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-4px); }
+    .icon-box {
+      width: 56px; height: 56px; background: rgba(76, 175, 80, 0.15);
+      color: var(--primary-accent); border-radius: 14px; display: flex;
+      align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.3rem; margin-bottom: 12px; }
+    .card p { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Calculators Grid */
+    .calc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .calc-box {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      padding: 24px; border-radius: 16px; text-align: center;
+    }
+    .calc-box i { font-size: 2rem; color: var(--primary-accent); margin-bottom: 12px; }
+    .calc-box h4 { font-size: 1.1rem; margin-bottom: 6px; }
+    .calc-box p { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* Privacy Banner */
+    .privacy-banner {
+      background: var(--bg-surface); border: 1px solid var(--border-color);
+      border-radius: 24px; padding: 48px 32px; text-align: center; margin-top: 40px;
+    }
+    .privacy-banner i { font-size: 3rem; color: var(--primary-accent); margin-bottom: 16px; }
+
+    footer { text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border-color); }
+    footer a { color: var(--primary-accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-wrapper">
+      <div class="logo">
+        <i class="fa-solid fa-dumbbell"></i> FitMetrics
+      </div>
+      <a href="#download" class="btn-download">
+        <i class="fa-brands fa-google-play"></i> Get on Play Store
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <i class="fa-solid fa-bolt"></i> Version 1.1.0 Released — 100% Offline & Private
+      </div>
+      <h1 class="hero-title">Track Gym Workouts & Master Your Health Metrics</h1>
+      <p class="hero-sub">
+        FitMetrics is an all-in-one workout logger, rest timer, and fitness calculator app built for speed. Log sets and reps, calculate BMI, BMR, Body Fat & Ideal Weight—all with zero latency and 100% local privacy.
+      </p>
+
+      <div class="store-buttons" id="download">
+        <a href="https://play.google.com/store/apps/details?id=com.trichy360media.fitmetrics" target="_blank" class="store-btn">
+          <i class="fa-brands fa-google-play"></i>
+          <div class="store-btn-text">
+            <small>Available on</small>
+            <strong>Google Play Store</strong>
+          </div>
+        </a>
+        <a href="https://fitmetrics-privacy-2026.netlify.app" target="_blank" class="store-btn">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div class="store-btn-text">
+            <small>Read Official</small>
+            <strong>Privacy Policy</strong>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key App Features -->
+  <section id="features">
+    <div class="container">
+      <h2 class="section-title">Built for Serious Workouts</h2>
+      <p class="section-sub">Designed for gym-goers who want fast, reliable logging without complex sign-ins or slow server loading.</p>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="icon-box"><i class="fa-solid fa-rectangle-list"></i></div>
+          <h3>Structured Workout Logger</h3>
+          <p>Easily log sets, reps, and weights. Features free-text exercise entry plus fast quick-suggestion badges for popular movements.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon-box"><i class="fa-solid fa-stopwatch"></i></div>
+          <h3>Dynamic Auto-Saving Rest Timer</h3>
+          <p>Customizable rest timer (30s to 180s) per exercise. The app remembers your preferred rest time for Squats vs. Bicep Curls automatically!</p>
+        </div>
+
+        <div class="card">
+          <div class="icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
+          <h3>History & Smart Auto-Fill</h3>
+          <p>Saves time during workouts by displaying your previous session's weight and reps, pre-filling input boxes so you can focus on lifting.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Health Calculators Section -->
+  <section id="calculators">
+    <div class="container">
+      <h2 class="section-title">Comprehensive Health Calculators</h2>
+      <p class="section-sub">Instant body metrics calculations with clear visual feedback.</p>
+
+      <div class="calc-list">
+        <div class="calc-box">
+          <i class="fa-solid fa-weight-scale"></i>
+          <h4>BMI Calculator</h4>
+          <p>Track your Body Mass Index with color-coded category scales.</p>
+        </div>
+        <div class="calc-box">
+          <i class="fa-solid fa-fire"></i>
+          <h4>BMR & TDEE</h4>
+          <p>Calculate your Basal Metabolic Rate and daily calorie expenditure.</p>
+        </div>
+        <div class="calc-box">
+          <i class="fa-solid fa-percent"></i>
+          <h4>Body Fat %</h4>
+          <p>Estimate body fat percentage using Navy body circumference methods.</p>
+        </div>
+        <div class="calc-box">
+          <i class="fa-solid fa-bullseye"></i>
+          <h4>Ideal Weight</h4>
+          <p>Determine target healthy weight ranges based on medical formulas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy Guarantee Section -->
+  <section id="privacy">
+    <div class="container">
+      <div class="privacy-banner">
+        <i class="fa-solid fa-lock"></i>
+        <h2>100% Private & Device-Local Data</h2>
+        <p style="max-width: 650px; margin: 12px auto 24px; color: var(--text-muted);">
+          FitMetrics does not require an account or transmit your personal health records to cloud servers. All your workout logs and body measurements remain strictly on your phone.
+        </p>
+        <a href="https://fitmetrics-privacy-2026.netlify.app" target="_blank" class="btn-download" style="background: var(--bg-card); border: 1px solid var(--border-color);">
+          <i class="fa-solid fa-file-contract"></i> View Privacy Policy
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 FitMetrics App. All rights reserved. Created by <a href="https://trichy360media-developer-portfolio.netlify.app" target="_blank">Trichy360Media & Developer Solutions</a>.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Outfit:wght@700;800;900&display=swap');
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: #020408;
+      display: flex;
+      gap: 60px;
+      padding: 40px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ══════════════════════════════════════
+       SHOT CONTAINER — 1080 x 1920 px
+       ══════════════════════════════════════ */
+    .shot {
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Ambient Background Glow ── */
+    .shot::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 900px;
+      border-radius: 50%;
+      filter: blur(180px);
+      opacity: 0.4;
+      z-index: 0;
+    }
+    .shot::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 300px;
+      background: linear-gradient(to top, #080C18 0%, transparent 100%);
+      z-index: 1;
+    }
+    .shot.green { background: linear-gradient(175deg, #0A1A12 0%, #060A14 40%, #080C18 100%); }
+    .shot.green::before { background: radial-gradient(circle, #22C55E 0%, transparent 70%); }
+    
+    .shot.blue { background: linear-gradient(175deg, #0A1225 0%, #060A14 40%, #080C18 100%); }
+    .shot.blue::before { background: radial-gradient(circle, #3B82F6 0%, transparent 70%); }
+    
+    .shot.purple { background: linear-gradient(175deg, #150A25 0%, #060A14 40%, #080C18 100%); }
+    .shot.purple::before { background: radial-gradient(circle, #A855F7 0%, transparent 70%); }
+
+    .shot.teal { background: linear-gradient(175deg, #071A1A 0%, #060A14 40%, #080C18 100%); }
+    .shot.teal::before { background: radial-gradient(circle, #14B8A6 0%, transparent 70%); }
+
+    /* ── Text Content Section ── */
+    .text-area {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 90px 70px 0;
+      text-align: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 40px;
+      border-radius: 60px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    .green .pill { background: rgba(34,197,94,0.12); border: 2px solid rgba(34,197,94,0.5); color: #4ADE80; }
+    .blue .pill  { background: rgba(59,130,246,0.12); border: 2px solid rgba(59,130,246,0.5); color: #60A5FA; }
+    .purple .pill { background: rgba(168,85,247,0.12); border: 2px solid rgba(168,85,247,0.5); color: #C084FC; }
+    .teal .pill  { background: rgba(20,184,166,0.12); border: 2px solid rgba(20,184,166,0.5); color: #5EEAD4; }
+
+    .headline {
+      font-family: 'Outfit', sans-serif;
+      font-size: 80px;
+      font-weight: 900;
+      color: #FFFFFF;
+      line-height: 1.08;
+      margin-bottom: 20px;
+      letter-spacing: -1.5px;
+    }
+    .green .headline .accent  { color: #4ADE80; }
+    .blue .headline .accent   { color: #60A5FA; }
+    .purple .headline .accent { color: #C084FC; }
+    .teal .headline .accent   { color: #5EEAD4; }
+
+    .subtitle {
+      font-size: 32px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+      line-height: 1.4;
+      max-width: 860px;
+      margin-bottom: 50px;
+    }
+
+    /* ── Device Mockup ── */
+    .device-wrap {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .device {
+      width: 620px;
+      position: relative;
+      background: #111827;
+      border: 8px solid #1F2937;
+      border-radius: 52px 52px 0 0;
+      overflow: hidden;
+    }
+    .green .device  { box-shadow: 0 0 0 2px rgba(255,255,255,0.05), 0 40px 100px rgba(0,0,0,0.8), 0 0 100px rgba(34,197,94,0.18); }
+    .blue .device   { box-shadow: 0 0 0 2px rgba(255,255,255,0.05), 0 40px 100px rgba(0,0,0,0.8), 0 0 100px rgba(59,130,246,0.18); }
+    .purple .device { box-shadow: 0 0 0 2px rgba(255,255,255,0.05), 0 40px 100px rgba(0,0,0,0.8), 0 0 100px rgba(168,85,247,0.18); }
+    .teal .device   { box-shadow: 0 0 0 2px rgba(255,255,255,0.05), 0 40px 100px rgba(0,0,0,0.8), 0 0 100px rgba(20,184,166,0.18); }
+
+    /* Dynamic Island */
+    .island {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      height: 32px;
+      background: #000;
+      border-radius: 18px;
+      z-index: 10;
+    }
+
+    .device .screen {
+      width: 100%;
+      border-radius: 44px 44px 0 0;
+      overflow: hidden;
+      background: #0D1117;
+    }
+
+    .device .screen img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════ SHOT 1: BMI Calculator ═══════ -->
+  <div class="shot green" id="shot1">
+    <div class="text-area">
+      <div class="pill">📊 INSTANT RESULTS</div>
+      <h1 class="headline">Know Your<br><span class="accent">BMI Score</span></h1>
+      <p class="subtitle">Color-coded health ranges with personalized advice</p>
+    </div>
+    <div class="device-wrap">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <img src="fresh_bmi.png" alt="BMI Calculator">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SHOT 2: BMR Calculator ═══════ -->
+  <div class="shot blue" id="shot2">
+    <div class="text-area">
+      <div class="pill">🔥 CALORIE SCIENCE</div>
+      <h1 class="headline">Daily Burn<br><span class="accent">Calorie Target</span></h1>
+      <p class="subtitle">BMR + 5 activity levels = your maintenance calories</p>
+    </div>
+    <div class="device-wrap">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <img src="fresh_bmr.png" alt="BMR Calculator">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SHOT 3: Body Fat ═══════ -->
+  <div class="shot purple" id="shot3">
+    <div class="text-area">
+      <div class="pill">💪 BODY COMPOSITION</div>
+      <h1 class="headline">Navy Method<br><span class="accent">Body Fat %</span></h1>
+      <p class="subtitle">Fat mass, lean mass & athlete-level classification</p>
+    </div>
+    <div class="device-wrap">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <img src="fresh_bodyfat.png" alt="Body Fat Calculator">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SHOT 4: Ideal Weight ═══════ -->
+  <div class="shot teal" id="shot4">
+    <div class="text-area">
+      <div class="pill">🔒 100% OFFLINE & PRIVATE</div>
+      <h1 class="headline">Your Ideal<br><span class="accent">Target Weight</span></h1>
+      <p class="subtitle">4 clinical formulas calculated locally on your phone</p>
+    </div>
+    <div class="device-wrap">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <img src="fresh_idealweight.png" alt="Ideal Weight Calculator">
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "fitmetrics",
+    "title": "FitMetrics — Offline-First Health & Workout Tracker",
+    "tag": "Mobile App • React Native & Expo",
+    "link": "https://fitmetrics-official-app.netlify.app",
+    "linkLabel": "Visit App Website",
+    "problem": "Gym goers needed a workout logger that works 100% offline in basement gyms with zero server latency and smart rest timer automation.",
+    "solution": "Engineered a React Native / Expo app with local SQLite storage, auto-saving rest timers per exercise, and an automated Playwright high-converting Play Store promo graphics pipeline.",
+    "outcome": "Released on Google Play Store (v1.1.0) with sub-50ms launch time, 100% offline data reliability, and high-converting store listing graphics.",
+    "techStack": ["React Native", "Expo", "SQLite", "Zustand", "Playwright Graphics Generator", "EAS Build", "Google Play Console"]
+  },
+  {
+    "id": "ai-invoice",
+    "title": "AI-Powered SaaS Invoice & Billing Automation",
+    "tag": "SaaS Platform • Next.js & AI",
+    "link": "",
+    "linkLabel": "",
+    "problem": "Growing businesses lost hours manually typing paper receipts, creating invoices, and chasing unpaid client bills.",
+    "solution": "Built a full-stack Next.js web application with AI receipt OCR parsing, automated Stripe subscription billing, and PDF export.",
+    "outcome": "Reduced manual invoice entry by 80% and automated payment tracking across hundreds of active client accounts.",
+    "techStack": ["Next.js", "Node.js", "OpenAI API", "Stripe SDK", "PostgreSQL", "TailwindCSS"]
+  },
+  {
+    "id": "health-analytics",
+    "title": "Real-Time Health & Fitness Analytics Portal",
+    "tag": "Web Portal • React & Analytics",
+    "link": "",
+    "linkLabel": "",
+    "problem": "Health coaches needed a central interactive dashboard to monitor client fitness progression, macro targets, and body metrics.",
+    "solution": "Constructed an interactive React web dashboard featuring responsive charts, CSV/PDF report generation, and instant filtering.",
+    "outcome": "Streamlined client consultations and provided instant progress tracking for coaches managing multi-client portfolios.",
+    "techStack": ["React.js", "Recharts", "Firebase", "REST API", "TypeScript"]
+  }
+]

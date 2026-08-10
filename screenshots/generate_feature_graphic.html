@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=Outfit:wght@800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1024px;
+      height: 500px;
+      background: radial-gradient(circle at 70% 50%, #1B3825 0%, #0B0F19 80%);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 60px;
+      color: #FFF;
+      overflow: hidden;
+      position: relative;
+    }
+    .text-group { max-width: 580px; }
+    .badge {
+      display: inline-block;
+      background: rgba(76, 175, 80, 0.2);
+      border: 1px solid #4CAF50;
+      color: #66BB6A;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+    p {
+      color: #9CA3AF;
+      font-size: 18px;
+    }
+    .icon-banner {
+      width: 220px;
+      height: 220px;
+      background: rgba(76, 175, 80, 0.15);
+      border: 2px solid rgba(76, 175, 80, 0.4);
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 60px rgba(76, 175, 80, 0.3);
+    }
+    .icon-banner img {
+      width: 140px;
+      height: 140px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="text-group">
+    <div class="badge">OFFLINE & PRIVATE</div>
+    <h1>FitMetrics — Workout & Health Tracker</h1>
+    <p>Track sets, reps, rest timers, BMI, BMR, Body Fat & Ideal Weight instantly.</p>
+  </div>
+  <div class="icon-banner">
+    <img src="../assets/icon.png" alt="FitMetrics">
+  </div>
+</body>
+</html>

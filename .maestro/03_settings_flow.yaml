@@ -1,0 +1,10 @@
+appId: host.exp.exponent
+---
+- tapOn: "BMI Calculator"
+- assertVisible: "Metric (cm / kg)"
+- tapOn: "Imperial (ft, in / lbs)"
+- assertVisible: "Height (Feet & Inches) *"
+- assertVisible: "Weight (lbs) *"
+- tapOn: "Metric (cm / kg)"
+- assertVisible: "Height (cm) *"
+- assertVisible: "Weight (kg) *"

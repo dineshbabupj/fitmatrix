@@ -1,0 +1,24 @@
+appId: host.exp.exponent
+---
+# Resilient navigation: tap Home or Calculators if needed
+- tapOn:
+    text: "BMI Calculator"
+    optional: true
+- tapOn:
+    text: "Calculators"
+    optional: true
+- tapOn:
+    text: "BMI Calculator"
+    optional: true
+- assertVisible: "Body Mass Index (BMI)"
+- tapOn: "Age (Years) *"
+- inputText: "25"
+- tapOn: "Height (cm) *"
+- inputText: "175"
+- tapOn: "Weight (kg) *"
+- inputText: "70"
+- tapOn: "Calculate BMI"
+- assertVisible: "Your BMI Result"
+- tapOn: "Home"
+- tapOn: "History"
+- assertVisible: "BMI"

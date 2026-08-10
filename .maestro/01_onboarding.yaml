@@ -1,0 +1,13 @@
+appId: host.exp.exponent
+---
+# Test Onboarding Slideshow
+- assertVisible: "Precision Health Calculators"
+- tapOn: "Next"
+- assertVisible: "Offline-First & Cloud Sync"
+- tapOn: "Next"
+- assertVisible: "Track Analytics & Progress"
+- tapOn: "Get Started"
+
+# Verify Home Dashboard navigation
+- assertVisible: "FitMetrics Dashboard"
+- assertVisible: "Health Calculators"

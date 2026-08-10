@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FitMetrics Promo Video Animation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@800;900&display=swap');
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: #020408;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      color: white;
+    }
+
+    /* 16:9 Video Canvas (1920x1080 scaling) */
+    .video-canvas {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      background: radial-gradient(circle at center, #111827 0%, #020408 100%);
+      transform-origin: center center;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    }
+    
+    /* Responsive scaling to fit screen while maintaining 16:9 */
+    @media (max-aspect-ratio: 16/9) {
+      .video-canvas { transform: scale(calc(100vw / 1920)); }
+    }
+    @media (min-aspect-ratio: 16/9) {
+      .video-canvas { transform: scale(calc(100vh / 1080)); }
+    }
+
+    /* Scene Containers */
+    .scene {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ═══════ SCENE 1: Intro (0s - 3s) ═══════ */
+    .scene-1 {
+      animation: fadeInOut 3s forwards;
+    }
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 140px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #4ADE80 0%, #16A34A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: scaleUp 2.5s ease-out forwards;
+    }
+    .sub-text {
+      font-size: 48px;
+      color: #9CA3AF;
+      margin-top: 20px;
+      opacity: 0;
+      animation: slideUpFade 1s 0.5s forwards;
+    }
+
+    /* ═══════ SCENE 2: The Device & Features (3s - 13s) ═══════ */
+    .scene-2 {
+      animation: fadeInOut 10s 3s forwards;
+      flex-direction: row;
+      justify-content: space-around;
+      padding: 0 100px;
+    }
+    
+    /* Left side text */
+    .text-column {
+      flex: 1;
+      padding-left: 100px;
+      position: relative;
+    }
+    .feature-text {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      opacity: 0;
+    }
+    .feature-text h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 90px;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+    .feature-text p {
+      font-size: 40px;
+      color: #9CA3AF;
+    }
+
+    /* Right side device */
+    .device-column {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .device {
+      width: 480px;
+      height: 980px;
+      background: #111827;
+      border: 12px solid #1F2937;
+      border-radius: 60px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 50px 100px rgba(0,0,0,0.8), 0 0 120px rgba(74, 222, 128, 0.2);
+      transform: translateY(100vh);
+      animation: deviceSlideUp 1s 3.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .island {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 30px;
+      background: #000;
+      border-radius: 15px;
+      z-index: 10;
+    }
+    .screen-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: auto;
+      border-radius: 48px;
+      opacity: 0;
+    }
+
+    /* Feature Animations (3s intervals) */
+    /* BMI (3.5s to 6.5s) */
+    .ft-1 { animation: textSequence 3s 3.5s forwards; }
+    .ft-1 h2 span { color: #4ADE80; }
+    .sc-1 { animation: screenSequence 3s 3.5s forwards; }
+
+    /* BMR (6.5s to 9.5s) */
+    .ft-2 { animation: textSequence 3s 6.5s forwards; }
+    .ft-2 h2 span { color: #60A5FA; }
+    .sc-2 { animation: screenSequence 3s 6.5s forwards; }
+
+    /* Body Fat (9.5s to 12.5s) */
+    .ft-3 { animation: textSequence 3s 9.5s forwards; }
+    .ft-3 h2 span { color: #C084FC; }
+    .sc-3 { animation: screenSequence 3s 9.5s forwards; }
+
+    /* ═══════ SCENE 3: Outro (13s - 17s) ═══════ */
+    .scene-3 {
+      animation: fadeInOut 4s 13s forwards;
+      background: linear-gradient(135deg, #020408 0%, #061A10 100%);
+    }
+    .outro-shield {
+      font-size: 120px;
+      color: #4ADE80;
+      margin-bottom: 40px;
+      transform: scale(0);
+      animation: popIn 0.8s 13.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    .outro-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 90px;
+      font-weight: 800;
+      text-align: center;
+      opacity: 0;
+      animation: slideUpFade 1s 13.5s forwards;
+    }
+    .outro-sub {
+      font-size: 40px;
+      color: #9CA3AF;
+      margin-top: 20px;
+      opacity: 0;
+      animation: slideUpFade 1s 13.8s forwards;
+    }
+
+    /* ═══════ Keyframes ═══════ */
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes scaleUp {
+      0% { transform: scale(0.8); }
+      100% { transform: scale(1.1); }
+    }
+    @keyframes slideUpFade {
+      0% { opacity: 0; transform: translateY(50px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes deviceSlideUp {
+      0% { transform: translateY(100vh) rotate(5deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+    @keyframes textSequence {
+      0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+      15% { opacity: 1; transform: translateY(0) scale(1); }
+      85% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-30px) scale(0.95); }
+    }
+    @keyframes screenSequence {
+      0% { opacity: 0; transform: scale(1.05); filter: blur(10px); }
+      15% { opacity: 1; transform: scale(1); filter: blur(0); }
+      85% { opacity: 1; transform: scale(1); filter: blur(0); }
+      100% { opacity: 0; transform: scale(1.05); filter: blur(10px); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+
+    /* Replay Button */
+    .replay-btn {
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 100;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+    .replay-btn:hover { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <div class="video-canvas" id="videoCanvas">
+    
+    <!-- Scene 1: Intro -->
+    <div class="scene scene-1">
+      <div class="logo-text">FitMetrics</div>
+      <div class="sub-text">Ultimate Health & Workout Tracker</div>
+    </div>
+
+    <!-- Scene 2: Device Features -->
+    <div class="scene scene-2">
+      <div class="text-column">
+        <div class="feature-text ft-1">
+          <h2>Know Your<br><span>BMI Score</span></h2>
+          <p>Color-coded health ranges<br>instantly on your phone.</p>
+        </div>
+        <div class="feature-text ft-2">
+          <h2>Daily Burn<br><span>Calorie Target</span></h2>
+          <p>Accurate BMR formulas<br>with 5 activity levels.</p>
+        </div>
+        <div class="feature-text ft-3">
+          <h2>Navy Method<br><span>Body Fat %</span></h2>
+          <p>Calculate fat & lean mass<br>with precision.</p>
+        </div>
+      </div>
+      
+      <div class="device-column">
+        <div class="device">
+          <div class="island"></div>
+          <img src="fresh_bmi.png" class="screen-img sc-1">
+          <img src="fresh_bmr.png" class="screen-img sc-2">
+          <img src="fresh_bodyfat.png" class="screen-img sc-3">
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 3: Outro -->
+    <div class="scene scene-3">
+      <div class="outro-shield">🛡️</div>
+      <div class="outro-text">100% Offline & Private</div>
+      <div class="outro-sub">Available Now on Google Play Store</div>
+    </div>
+
+  </div>
+
+  <button class="replay-btn" onclick="replay()">🔄 Replay Animation</button>
+
+  <script>
+    function replay() {
+      const canvas = document.getElementById('videoCanvas');
+      // Clone and replace to restart CSS animations
+      const newCanvas = canvas.cloneNode(true);
+      canvas.parentNode.replaceChild(newCanvas, canvas);
+    }
+  </script>
+
+</body>
+</html>

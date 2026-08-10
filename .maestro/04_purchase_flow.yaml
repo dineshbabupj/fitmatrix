@@ -1,0 +1,6 @@
+appId: host.exp.exponent
+---
+- tapOn: "Progress"
+- assertVisible: "Unlock Advanced Health Analytics"
+- tapOn: "Watch Ad"
+- assertVisible: "Premium Health Analytics Unlocked"

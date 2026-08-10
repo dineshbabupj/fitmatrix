@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Senior Full-Stack & Mobile Developer | Web, Mobile, AI & SaaS Solutions</title>
+  <meta name="description" content="Portfolio of Senior Full-Stack & Mobile Developer specializing in React Native, Flutter, Next.js, Node.js, AI Integration, and Cloud Solutions.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #090D16;
+      --bg-card: #121826;
+      --bg-card-hover: #1A2335;
+      --border-color: #212D45;
+      --primary: #3B82F6;
+      --primary-accent: #60A5FA;
+      --success: #10B981;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --gradient-accent: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+      color: #FFFFFF;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header & Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 0;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      background: var(--gradient-accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary-accent);
+    }
+
+    .btn-contact {
+      background: var(--gradient-accent);
+      color: #FFF;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .btn-contact:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 0 60px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      font-weight: 800;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s, border 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--primary);
+    }
+
+    .profile-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    .profile-img-wrapper {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      padding: 4px;
+      background: var(--gradient-accent);
+      overflow: hidden;
+    }
+
+    .profile-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .rate-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #1E293B;
+      border: 1px solid var(--primary);
+      color: var(--primary-accent);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .profile-name {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+
+    .profile-role {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .stat-box h4 {
+      font-size: 1.2rem;
+      color: var(--primary-accent);
+    }
+
+    .stat-box p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Section Styles */
+    section {
+      padding: 80px 0;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .section-title {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 48px;
+    }
+
+    /* Value Propositions Grid */
+    .props-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+    }
+
+    .prop-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      transition: transform 0.2s;
+    }
+
+    .prop-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .prop-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--primary-accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+    }
+
+    .prop-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .prop-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Case Studies Section */
+    .case-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 36px;
+      margin-bottom: 32px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .case-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .case-tag {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--primary-accent);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .case-title {
+      font-size: 1.5rem;
+      margin-top: 8px;
+    }
+
+    .case-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 16px;
+      background: var(--bg-dark);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .case-detail-box h4 {
+      font-size: 0.9rem;
+      color: var(--primary-accent);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .case-detail-box p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .tech-stack {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .tech-pill {
+      background: #1E293B;
+      color: #CBD5E1;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* Skills Grid */
+    .skills-matrix {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .skill-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.2s;
+    }
+
+    .skill-chip:hover {
+      border-color: var(--primary);
+    }
+
+    /* Contact Section */
+    .contact-card {
+      background: var(--gradient-accent);
+      border-radius: 24px;
+      padding: 48px 32px;
+      text-align: center;
+      color: #FFF;
+    }
+
+    .contact-card h2 {
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+    }
+
+    .contact-card p {
+      max-width: 600px;
+      margin: 0 auto 32px;
+      font-size: 1.05rem;
+      opacity: 0.9;
+    }
+
+    .contact-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-light {
+      background: #FFFFFF;
+      color: #0F172A;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s;
+    }
+
+    .btn-light:hover {
+      transform: scale(1.03);
+    }
+
+    footer {
+      text-align: center;
+      padding: 32px 0;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 768px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-title {
+        font-size: 2rem;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container nav-wrapper">
+      <div class="logo">
+        <i class="fa-solid fa-code"></i> Trichy360Media Devs
+      </div>
+      <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#work">Case Studies</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="https://wa.me/919629879032" target="_blank" class="btn-contact">
+        <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-tag">
+          <i class="fa-solid fa-circle-check"></i> Available for Upwork & Freelance Projects
+        </div>
+        <h1 class="hero-title">Building Scalable Web, Mobile & AI Apps That Hold Up at Scale</h1>
+        <p class="hero-sub">
+          With 6+ years of full-stack development experience, I help founders and growing businesses turn digital ideas into robust, production-ready applications. No freelancer chaos—just clean code, fast execution, and business outcomes.
+        </p>
+        <div class="hero-ctas">
+          <a href="mailto:trichy360mediaoffice@gmail.com" class="btn-contact">
+            <i class="fa-solid fa-envelope"></i> Email Me Direct
+          </a>
+          <a href="https://wa.me/919629879032" class="btn-secondary" target="_blank">
+            <i class="fa-brands fa-whatsapp"></i> +91 9629879032
+          </a>
+          <a href="#work" class="btn-secondary">
+            <i class="fa-solid fa-layer-group"></i> View Case Studies
+          </a>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="rate-badge">$10.00 / hr</div>
+        <div class="profile-img-wrapper">
+          <img src="assets/profile.jpg" alt="Senior Full-Stack & Mobile Developer">
+        </div>
+        <h3 class="profile-name">Senior Full-Stack Lead</h3>
+        <p class="profile-role">Web • Mobile • AI Solutions</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          "I care about whether what I build actually moves the needle for your business—more users, smoother operations, zero downtime."
+        </p>
+        <div class="stats-row">
+          <div class="stat-box">
+            <h4>6+ Yrs</h4>
+            <p>Experience</p>
+          </div>
+          <div class="stat-box">
+            <h4>100%</h4>
+            <p>Commitment</p>
+          </div>
+          <div class="stat-box">
+            <h4>< 2 Hrs</h4>
+            <p>Response</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Capabilities Section -->
+  <section id="services">
+    <div class="container">
+      <h2 class="section-title">What I Can Build For You</h2>
+      <p class="section-sub">Full lifecycle engineering—from architectural planning to cloud deployment and Play Store releases.</p>
+
+      <div class="props-grid">
+        <div class="prop-card">
+          <div class="prop-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+          <h3>Mobile App Development</h3>
+          <p>Cross-platform React Native & Flutter apps for iOS and Android with offline-first SQLite sync, push notifications, and store publishing.</p>
+        </div>
+
+        <div class="prop-card">
+          <div class="prop-icon"><i class="fa-solid fa-laptop-code"></i></div>
+          <h3>Full-Stack SaaS & Web</h3>
+          <p>Custom React.js, Next.js, and Node.js applications, admin portals, and scalable cloud APIs built for high concurrency.</p>
+        </div>
+
+        <div class="prop-card">
+          <div class="prop-icon"><i class="fa-solid fa-robot"></i></div>
+          <h3>AI & Workflow Automation</h3>
+          <p>Integration of OpenAI ChatGPT APIs, LLM assistants, Google ML Kit, and automated business processes to reduce manual team effort.</p>
+        </div>
+
+        <div class="prop-card">
+          <div class="prop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <h3>Cloud & DevOps</h3>
+          <p>Secure database architecture (PostgreSQL, Firebase), REST APIs, payment integrations (Stripe), and automated CI/CD pipelines.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case Studies Section -->
+  <section id="work">
+    <div class="container">
+      <h2 class="section-title">Featured Case Studies</h2>
+      <p class="section-sub">Real-world applications built with clear problem-solution context and measurable outcomes.</p>
+
+      <div id="case-studies-container">
+        <!-- Case Study 1 -->
+        <div class="case-card">
+          <div class="case-header">
+            <div>
+              <span class="case-tag">Mobile App • React Native & Expo</span>
+              <h3 class="case-title">FitMetrics — Offline-First Health & Workout Tracker</h3>
+            </div>
+            <a href="https://fitmetrics-privacy-2026.netlify.app" target="_blank" class="btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">
+              <i class="fa-solid fa-globe"></i> App Privacy Page
+            </a>
+          </div>
+
+          <div class="case-details-grid">
+            <div class="case-detail-box">
+              <h4><i class="fa-solid fa-triangle-exclamation"></i> The Problem</h4>
+              <p>Gym goers needed a workout logger that works 100% offline in basement gyms with zero server latency and smart rest timer automation.</p>
+            </div>
+            <div class="case-detail-box">
+              <h4><i class="fa-solid fa-lightbulb"></i> The Solution</h4>
+              <p>Engineered a React Native / Expo application with local SQLite storage, auto-saving rest timers per exercise, and history auto-filling.</p>
+            </div>
+            <div class="case-detail-box">
+              <h4><i class="fa-solid fa-chart-line"></i> The Outcome</h4>
+              <p>Released on Google Play Store (v1.1.0) with sub-50ms launch time, 100% offline data reliability, and zero cloud server upkeep cost.</p>
+            </div>
+          </div>
+
+          <div class="tech-stack">
+            <span class="tech-pill">React Native</span>
+            <span class="tech-pill">Expo</span>
+            <span class="tech-pill">SQLite</span>
+            <span class="tech-pill">Zustand</span>
+            <span class="tech-pill">EAS Build</span>
+            <span class="tech-pill">Google Play Console</span>
+          </div>
+        </div>
+
+        <!-- Case Study 2 -->
+        <div class="case-card">
+          <div class="case-header">
+            <div>
+              <span class="case-tag">SaaS Platform • Next.js & AI</span>
+              <h3 class="case-title">AI-Powered SaaS Invoice & Billing Automation</h3>
+            </div>
+          </div>
+
+          <div class="case-details-grid">
+            <div class="case-detail-box">
+              <h4><i class="fa-solid fa-triangle-exclamation"></i> The Problem</h4>
+              <p>Growing businesses lost hours manually typing paper receipts, creating invoices, and chasing unpaid client bills.</p>
+            </div>
+            <div class="case-detail-box">
+              <h4><i class="fa-solid fa-lightbulb"></i> The Solution</h4>
+              <p>Built a full-stack Next.js web application with AI receipt OCR parsing, automated Stripe subscription billing, and PDF export.</p>
+            </div>
+            <div class="case-detail-box">
+              <h4><i class="fa-solid fa-chart-line"></i> The Outcome</h4>
+              <p>Reduced manual invoice entry by 80% and automated payment tracking across hundreds of active client accounts.</p>
+            </div>
+          </div>
+
+          <div class="tech-stack">
+            <span class="tech-pill">Next.js</span>
+            <span class="tech-pill">Node.js</span>
+            <span class="tech-pill">OpenAI API</span>
+            <span class="tech-pill">Stripe SDK</span>
+            <span class="tech-pill">PostgreSQL</span>
+            <span class="tech-pill">TailwindCSS</span>
+          </div>
+        </div>
+
+        <!-- Case Study 3 -->
+        <div class="case-card">
+          <div class="case-header">
+            <div>
+              <span class="case-tag">Web Portal • React & Analytics</span>
+              <h3 class="case-title">Real-Time Health & Fitness Analytics Portal</h3>
+            </div>
+          </div>
+
+          <div class="case-details-grid">
+            <div class="case-detail-box">
+              <h4><i class="fa-solid fa-triangle-exclamation"></i> The Problem</h4>
+              <p>Health coaches needed a central interactive dashboard to monitor client fitness progression, macro targets, and body metrics.</p>
+            </div>
+            <div class="case-detail-box">
+              <h4><i class="fa-solid fa-lightbulb"></i> The Solution</h4>
+              <p>Constructed an interactive React web dashboard featuring responsive charts, CSV/PDF report generation, and instant filtering.</p>
+            </div>
+            <div class="case-detail-box">
+              <h4><i class="fa-solid fa-chart-line"></i> The Outcome</h4>
+              <p>Streamlined client consultations and provided instant progress tracking for coaches managing multi-client portfolios.</p>
+            </div>
+          </div>
+
+          <div class="tech-stack">
+            <span class="tech-pill">React.js</span>
+            <span class="tech-pill">Recharts</span>
+            <span class="tech-pill">Firebase</span>
+            <span class="tech-pill">REST API</span>
+            <span class="tech-pill">TypeScript</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Matrix Section -->
+  <section id="skills">
+    <div class="container">
+      <h2 class="section-title">Technical Expertise & Tooling</h2>
+      <p class="section-sub">Tested frameworks and tools I use to deliver high-quality software.</p>
+
+      <div class="skills-matrix">
+        <div class="skill-chip"><i class="fa-brands fa-react" style="color: #61DAFB;"></i> React Native / Expo</div>
+        <div class="skill-chip"><i class="fa-brands fa-flutter" style="color: #02569B;"></i> Flutter / Dart</div>
+        <div class="skill-chip"><i class="fa-brands fa-node-js" style="color: #339933;"></i> Node.js & Express</div>
+        <div class="skill-chip"><i class="fa-solid fa-server" style="color: #38BDF8;"></i> Next.js</div>
+        <div class="skill-chip"><i class="fa-solid fa-brain" style="color: #10A37F;"></i> OpenAI / LLMs</div>
+        <div class="skill-chip"><i class="fa-solid fa-database" style="color: #FFA611;"></i> Firebase & Firestore</div>
+        <div class="skill-chip"><i class="fa-solid fa-database" style="color: #336791;"></i> PostgreSQL & SQLite</div>
+        <div class="skill-chip"><i class="fa-brands fa-android" style="color: #3DDC84;"></i> Android SDK & Kotlin</div>
+        <div class="skill-chip"><i class="fa-brands fa-apple" style="color: #FFF;"></i> iOS SDK & Xcode</div>
+        <div class="skill-chip"><i class="fa-solid fa-credit-card" style="color: #635BFF;"></i> Stripe SDK</div>
+        <div class="skill-chip"><i class="fa-solid fa-microchip" style="color: #EA4335;"></i> Google ML Kit</div>
+        <div class="skill-chip"><i class="fa-solid fa-infinity" style="color: #F05032;"></i> CI/CD & Git</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact CTA Section -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-card">
+        <h2>Have a Project in Mind?</h2>
+        <p>Whether you need an MVP built from scratch, a cross-platform mobile app, or an AI feature integrated into your SaaS—let's discuss your project.</p>
+        <div class="contact-buttons">
+          <a href="mailto:trichy360mediaoffice@gmail.com" class="btn-light">
+            <i class="fa-solid fa-envelope"></i> Mail: trichy360mediaoffice@gmail.com
+          </a>
+          <a href="https://wa.me/919629879032" class="btn-light" target="_blank">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp: +91 9629879032
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 Trichy360Media & Developer Solutions. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    async function loadDynamicProjects() {
+      try {
+        const res = await fetch('projects.json');
+        if (!res.ok) return;
+        const projects = await res.json();
+        const container = document.getElementById('case-studies-container');
+        if (!container || !projects || !projects.length) return;
+        
+        container.innerHTML = projects.map(p => `
+          <div class="case-card">
+            <div class="case-header">
+              <div>
+                <span class="case-tag">${p.tag}</span>
+                <h3 class="case-title">${p.title}</h3>
+              </div>
+              ${p.link ? `<a href="${p.link}" target="_blank" class="btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">
+                <i class="fa-solid fa-globe"></i> ${p.linkLabel || 'View Link'}
+              </a>` : ''}
+            </div>
+
+            <div class="case-details-grid">
+              <div class="case-detail-box">
+                <h4><i class="fa-solid fa-triangle-exclamation"></i> The Problem</h4>
+                <p>${p.problem}</p>
+              </div>
+              <div class="case-detail-box">
+                <h4><i class="fa-solid fa-lightbulb"></i> The Solution</h4>
+                <p>${p.solution}</p>
+              </div>
+              <div class="case-detail-box">
+                <h4><i class="fa-solid fa-chart-line"></i> The Outcome</h4>
+                <p>${p.outcome}</p>
+              </div>
+            </div>
+
+            <div class="tech-stack">
+              ${p.techStack.map(t => `<span class="tech-pill">${t}</span>`).join('')}
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.log('Using static case studies fallback');
+      }
+    }
+    document.addEventListener('DOMContentLoaded', loadDynamicProjects);
+  </script>
+</body>
+</html>

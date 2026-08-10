@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upwork Project Catalog Video</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@800;900&display=swap');
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: #09090b; /* Very dark zinc */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      color: white;
+    }
+
+    /* 16:9 Video Canvas (1920x1080 scaling) */
+    .video-canvas {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      background: radial-gradient(circle at center, #18181b 0%, #09090b 100%);
+      transform-origin: center center;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    }
+    
+    /* Responsive scaling */
+    @media (max-aspect-ratio: 16/9) { .video-canvas { transform: scale(calc(100vw / 1920)); } }
+    @media (min-aspect-ratio: 16/9) { .video-canvas { transform: scale(calc(100vh / 1080)); } }
+
+    /* Scene Containers */
+    .scene {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ═══════ SCENE 1: The Hook (0s - 5s) ═══════ */
+    .scene-1 { animation: sceneFadeInOut 5s forwards; }
+    .hook-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 100px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .hook-text span {
+      background: linear-gradient(135deg, #61DAFB 0%, #3B82F6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hook-anim {
+      opacity: 0;
+      animation: slideUpFade 1s 0.5s forwards;
+    }
+
+    /* ═══════ SCENE 2: The Value (5s - 11s) ═══════ */
+    .scene-2 { animation: sceneFadeInOut 6s 5s forwards; }
+    .value-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 80px;
+      font-weight: 800;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: slideUpFade 1s 5.5s forwards;
+    }
+    .value-title span { color: #10B981; }
+    
+    .tech-grid {
+      display: flex;
+      gap: 30px;
+      opacity: 0;
+      animation: popIn 1s 6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    .tech-box {
+      background: #1F2937;
+      border: 2px solid #374151;
+      padding: 30px 50px;
+      border-radius: 20px;
+      font-size: 30px;
+      font-weight: 700;
+      color: #E5E7EB;
+    }
+
+    /* ═══════ SCENE 3: The Portfolio (11s - 19s) ═══════ */
+    .scene-3 { animation: sceneFadeInOut 8s 11s forwards; background: radial-gradient(circle at top right, #1a2f23 0%, #020408 100%); }
+    .port-title {
+      position: absolute;
+      top: 100px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 70px;
+      font-weight: 800;
+      color: white;
+      opacity: 0;
+      animation: slideDownFade 1s 11.5s forwards;
+    }
+    .port-title span { color: #4ADE80; }
+    
+    .devices-container {
+      display: flex;
+      gap: 40px;
+      margin-top: 100px;
+    }
+    .device {
+      width: 380px;
+      height: 780px;
+      background: #111827;
+      border: 10px solid #1F2937;
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+      opacity: 0;
+    }
+    .dev-1 { animation: slideUpFade 1s 12s forwards; }
+    .dev-2 { animation: slideUpFade 1s 12.5s forwards; }
+    .screen { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ═══════ SCENE 4: CTA (19s - 25s) ═══════ */
+    .scene-4 { animation: sceneFadeInOut 6s 19s forwards; background: linear-gradient(135deg, #10B981 0%, #059669 100%); }
+    .cta-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 110px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.1;
+      opacity: 0;
+      animation: popIn 1s 19.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    .cta-sub {
+      font-size: 45px;
+      font-weight: 600;
+      margin-top: 30px;
+      opacity: 0;
+      animation: slideUpFade 1s 20s forwards;
+      background: white;
+      color: #059669;
+      padding: 15px 40px;
+      border-radius: 40px;
+    }
+
+    /* ═══════ Keyframes ═══════ */
+    @keyframes sceneFadeInOut {
+      0% { opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes slideUpFade {
+      0% { opacity: 0; transform: translateY(80px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDownFade {
+      0% { opacity: 0; transform: translateY(-80px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Replay Button */
+    .replay-btn {
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 100;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+    .replay-btn:hover { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <div class="video-canvas" id="videoCanvas">
+    
+    <!-- Scene 1: The Hook -->
+    <div class="scene scene-1">
+      <div class="hook-text hook-anim">Looking for a Pro<br><span>React Native Developer?</span></div>
+    </div>
+
+    <!-- Scene 2: The Value -->
+    <div class="scene scene-2">
+      <div class="value-title">I build blazing-fast apps for <span>iOS & Android</span></div>
+      <div class="tech-grid">
+        <div class="tech-box">React Native</div>
+        <div class="tech-box">Expo SDK</div>
+        <div class="tech-box">Supabase</div>
+        <div class="tech-box">SQLite</div>
+      </div>
+    </div>
+
+    <!-- Scene 3: Portfolio Showcase -->
+    <div class="scene scene-3">
+      <div class="port-title">Recent Work: <span>FitMetrics App</span></div>
+      <div class="devices-container">
+        <div class="device dev-1"><img src="fresh_bmr.png" class="screen"></div>
+        <div class="device dev-2"><img src="fresh_bodyfat.png" class="screen"></div>
+      </div>
+    </div>
+
+    <!-- Scene 4: CTA -->
+    <div class="scene scene-4">
+      <div class="cta-text">Let's turn your Figma design<br>into a real mobile app.</div>
+      <div class="cta-sub">Order the Project Catalog Now</div>
+    </div>
+
+  </div>
+
+  <button class="replay-btn" onclick="replay()">🔄 Replay Animation</button>
+
+  <script>
+    function replay() {
+      const canvas = document.getElementById('videoCanvas');
+      const newCanvas = canvas.cloneNode(true);
+      canvas.parentNode.replaceChild(newCanvas, canvas);
+    }
+  </script>
+
+</body>
+</html>

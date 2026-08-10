@@ -1,0 +1,14 @@
+appId: host.exp.exponent
+---
+- tapOn: "BMI Calculator"
+- tapOn: "Age (Years) *"
+- inputText: "30"
+- tapOn: "Height (cm) *"
+- inputText: "180"
+- tapOn: "Weight (kg) *"
+- inputText: "80"
+- tapOn: "Calculate BMI"
+- assertVisible: "Your BMI Result"
+- tapOn: "Home"
+- tapOn: "History"
+- assertVisible: "BMI"
