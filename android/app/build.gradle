@@ -114,7 +114,7 @@ android {
         applicationId 'com.trichy360media.fitmetrics'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 33
+        versionCode 34
         versionName "1.4.0"
     }
     signingConfigs {
@@ -200,4 +200,5 @@ if (rnVersion < versionToNumber(0, 75, 0)) {
     applyNativeModulesAppBuildGradle(project)
 }
 
-apply plugin: 'com.google.gms.google-services'
+// Firebase Google Services plugin - re-enable when google-services.json is committed
+// apply plugin: 'com.google.gms.google-services'
