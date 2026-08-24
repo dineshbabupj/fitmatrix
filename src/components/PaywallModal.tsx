@@ -10,8 +10,8 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { PurchasesPackage, PurchasesOffering } from 'react-native-purchases';
 import { revenueCatService } from '../services/iap/revenueCatService';
-import { IAPProduct, IAP_PRODUCT_IDS } from '../services/iap/iapConfig';
 import { theme } from '../theme/theme';
 
 interface PaywallModalProps {
@@ -21,37 +21,42 @@ interface PaywallModalProps {
 }
 
 export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, onSuccess }) => {
-  const [products, setProducts] = useState<IAPProduct[]>([]);
-  const [selectedProductId, setSelectedProductId] = useState<string>(IAP_PRODUCT_IDS.premiumYearly);
+  const [packages, setPackages] = useState<PurchasesPackage[]>([]);
+  const [selectedPackage, setSelectedPackage] = useState<PurchasesPackage | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [purchasing, setPurchasing] = useState<boolean>(false);
 
   useEffect(() => {
     if (visible) {
-      loadProducts();
+      loadOfferings();
     }
   }, [visible]);
 
-  const loadProducts = async () => {
+  const loadOfferings = async () => {
     setLoading(true);
     try {
-      const items = await revenueCatService.getProducts();
-      setProducts(items);
+      const offering = await revenueCatService.getOfferings();
+      if (offering && offering.availablePackages.length > 0) {
+        setPackages(offering.availablePackages);
+        // Default select the annual package (best value)
+        const annual = offering.availablePackages.find(p => p.packageType === 'ANNUAL');
+        setSelectedPackage(annual ?? offering.availablePackages[0]);
+      }
     } catch (e) {
-      console.warn('Failed to load IAP products:', e);
+      console.warn('Failed to load offerings:', e);
     } finally {
       setLoading(false);
     }
   };
 
   const handlePurchase = async () => {
-    if (!selectedProductId) return;
+    if (!selectedPackage) return;
 
     setPurchasing(true);
     try {
-      const res = await revenueCatService.purchaseProduct(selectedProductId);
+      const res = await revenueCatService.purchasePackage(selectedPackage);
       if (res.success) {
-        Alert.alert('Purchase Successful! 🎉', 'Thank you for supporting FitMetrics Pro!');
+        Alert.alert('Purchase Successful! 🎉', 'Thank you for upgrading to FitMetrics Pro!');
         if (onSuccess) onSuccess();
         onClose();
       }
@@ -80,6 +85,18 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
     }
   };
 
+  const getPackageLabel = (pkg: PurchasesPackage): string => {
+    switch (pkg.packageType) {
+      case 'MONTHLY': return 'Monthly';
+      case 'ANNUAL': return 'Yearly';
+      case 'LIFETIME': return 'Lifetime';
+      default: return pkg.identifier;
+    }
+  };
+
+  const isLifetime = (pkg: PurchasesPackage): boolean => pkg.packageType === 'LIFETIME';
+  const isAnnual = (pkg: PurchasesPackage): boolean => pkg.packageType === 'ANNUAL';
+
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <View style={styles.modalOverlay}>
@@ -95,24 +112,25 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
               <Ionicons name="sparkles" size={40} color={theme.colors.dark.primary} />
               <Text style={styles.title}>Unlock FitMetrics Pro</Text>
               <Text style={styles.subtitle}>
-                Get unlimited access to advanced trends, PDF exports, and remove all ads.
+                Get unlimited access to AI Coach, Barcode Scanner, Heatmaps, PDF Export & more.
               </Text>
             </View>
 
             {/* Feature Bullet Points */}
             <View style={styles.featuresBox}>
-              <View style={styles.featureItem}>
-                <Ionicons name="checkmark-circle" size={18} color={theme.colors.dark.primary} />
-                <Text style={styles.featureText}>Remove All Banner, Interstitial & Native Ads</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Ionicons name="checkmark-circle" size={18} color={theme.colors.dark.primary} />
-                <Text style={styles.featureText}>Advanced Progress & Health Trend Charts</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Ionicons name="checkmark-circle" size={18} color={theme.colors.dark.primary} />
-                <Text style={styles.featureText}>Unlimited Cloud Sync across all Devices</Text>
-              </View>
+              {[
+                'Remove All Banner, Interstitial & Native Ads',
+                'AI Progressive Overload Coach',
+                'Barcode Food Scanner',
+                'Muscle Recovery Heatmap',
+                'PDF Progress Reports',
+                'Unlimited Cloud Sync',
+              ].map((feature, i) => (
+                <View key={i} style={styles.featureItem}>
+                  <Ionicons name="checkmark-circle" size={18} color={theme.colors.dark.primary} />
+                  <Text style={styles.featureText}>{feature}</Text>
+                </View>
+              ))}
             </View>
 
             {/* Products Selector */}
@@ -120,18 +138,23 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
               <ActivityIndicator size="large" color={theme.colors.dark.primary} style={{ marginVertical: 20 }} />
             ) : (
               <View style={styles.productsList}>
-                {products.map((p) => {
-                  const isSelected = p.id === selectedProductId;
+                {packages.map((pkg) => {
+                  const isSelected = selectedPackage?.identifier === pkg.identifier;
                   return (
                     <TouchableOpacity
-                      key={p.id}
+                      key={pkg.identifier}
                       style={[styles.productCard, isSelected && styles.productCardActive]}
-                      onPress={() => setSelectedProductId(p.id)}
+                      onPress={() => setSelectedPackage(pkg)}
                       activeOpacity={0.8}
                     >
-                      {p.savingsBadge && (
+                      {isLifetime(pkg) && (
                         <View style={styles.savingsBadge}>
-                          <Text style={styles.savingsBadgeText}>{p.savingsBadge}</Text>
+                          <Text style={styles.savingsBadgeText}>BEST DEAL</Text>
+                        </View>
+                      )}
+                      {isAnnual(pkg) && (
+                        <View style={[styles.savingsBadge, { backgroundColor: '#FF9800' }]}>
+                          <Text style={styles.savingsBadgeText}>SAVE 50%</Text>
                         </View>
                       )}
                       <View style={styles.productLeft}>
@@ -141,13 +164,25 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
                           color={isSelected ? theme.colors.dark.primary : theme.colors.dark.outline}
                         />
                         <View>
-                          <Text style={styles.productTitle}>{p.title}</Text>
-                          <Text style={styles.productDesc}>{p.description}</Text>
+                          <Text style={styles.productTitle}>
+                            FitMetrics Pro ({getPackageLabel(pkg)})
+                          </Text>
+                          <Text style={styles.productDesc}>
+                            {isLifetime(pkg)
+                              ? 'One-time payment. Yours forever.'
+                              : `All Pro features`}
+                          </Text>
                         </View>
                       </View>
                       <View style={styles.productRight}>
-                        <Text style={styles.productPrice}>{p.price}</Text>
-                        {p.period && <Text style={styles.productPeriod}>{p.period}</Text>}
+                        <Text style={styles.productPrice}>
+                          {pkg.product.priceString}
+                        </Text>
+                        {!isLifetime(pkg) && (
+                          <Text style={styles.productPeriod}>
+                            /{pkg.packageType === 'MONTHLY' ? 'mo' : 'yr'}
+                          </Text>
+                        )}
                       </View>
                     </TouchableOpacity>
                   );
@@ -159,7 +194,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
             <TouchableOpacity
               style={styles.purchaseBtn}
               onPress={handlePurchase}
-              disabled={purchasing}
+              disabled={purchasing || !selectedPackage}
               activeOpacity={0.8}
             >
               {purchasing ? (

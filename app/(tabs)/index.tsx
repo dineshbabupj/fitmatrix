@@ -1,133 +1,222 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../src/theme/theme';
-import { storage } from '../../src/data/storage';
+import { useUserStore } from '../../src/store/userStore';
+import { useFoodStore } from '../../src/store/foodStore';
+import { useWaterStore } from '../../src/store/waterStore';
+import { healthService } from '../../src/services/health/healthService';
+import { AdBanner } from '../../src/components/AdBanner';
+import { PaywallModal } from '../../src/components/PaywallModal';
+
+const AnimatedProgressBar = ({ progress, color }: { progress: number; color: string }) => {
+  const [animatedWidth] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    Animated.timing(animatedWidth, {
+      toValue: progress,
+      duration: 800,
+      useNativeDriver: false, // width doesn't support native driver
+    }).start();
+  }, [progress]);
+
+  return (
+    <View style={styles.progressBarBg}>
+      <Animated.View
+        style={[
+          styles.progressBarFill,
+          {
+            backgroundColor: color,
+            width: animatedWidth.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['0%', '100%'],
+            }),
+          },
+        ]}
+      />
+    </View>
+  );
+};
 
 export default function HomeScreen() {
-  const history = storage.getHistory();
-  const goal = storage.getGoal();
+  const profile = useUserStore((state) => state.profile);
+  const { getTodayTotals } = useFoodStore();
+  const totals = getTodayTotals();
+  const waterIntake = useWaterStore((state) => state.getTodayIntake());
+  const waterGoal = useWaterStore((state) => state.dailyGoal);
+  const isPremium = useUserStore((state) => state.isPremium);
+  const [paywallVisible, setPaywallVisible] = useState(false);
+  const [steps, setSteps] = useState(0);
+  const [stepSource, setStepSource] = useState<string>('mock');
 
-  const calculatorLinks = [
-    {
-      title: 'BMI Calculator',
-      subtitle: 'Body Mass Index',
-      icon: 'body-outline' as const,
-      route: '/calculators/bmi' as const,
-      color: '#4CAF50',
-    },
-    {
-      title: 'BMR Calculator',
-      subtitle: 'Basal Metabolic Rate',
-      icon: 'flame-outline' as const,
-      route: '/calculators/bmr' as const,
-      color: '#FF9800',
-    },
-    {
-      title: 'Body Fat',
-      subtitle: 'Fat Percentage',
-      icon: 'fitness-outline' as const,
-      route: '/calculators/body-fat' as const,
-      color: '#00BCD4',
-    },
-    {
-      title: 'Ideal Weight',
-      subtitle: 'Target Weight Range',
-      icon: 'ribbon-outline' as const,
-      route: '/calculators/ideal-weight' as const,
-      color: '#9C27B0',
-    },
-  ];
+  // Live step count — Option 1 (pedometer) with Option 2 (Google Fit) fallback
+  useEffect(() => {
+    let mounted = true;
+
+    const loadSteps = async () => {
+      const data = await healthService.getStepsBestSource();
+      if (mounted) {
+        setSteps(data.steps);
+        setStepSource(data.source);
+      }
+    };
+
+    loadSteps();
+
+    // Subscribe to live updates from pedometer
+    healthService.subscribeToSteps((data) => {
+      if (mounted) {
+        setSteps(data.steps);
+        setStepSource(data.source);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      healthService.unsubscribe();
+    };
+  }, []);
+
+  // Basic goals based on profile
+  const calorieGoal = profile.goal === 'lose_weight' ? 1800 : profile.goal === 'build_muscle' ? 2800 : 2200;
+  const proteinGoal = profile.weightKg ? profile.weightKg * 2 : 150;
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Welcome Banner */}
-        <View style={styles.heroCard}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        
+        {/* Header */}
+        <View style={styles.header}>
           <View>
-            <Text style={styles.heroTitle}>FitMetrics Dashboard</Text>
-            <Text style={styles.heroSubtitle}>Track your vital metrics & body composition</Text>
+            <Text style={styles.greeting}>Ready to crush it,</Text>
+            <Text style={styles.name}>{profile.name || 'Athlete'}!</Text>
           </View>
-          <TouchableOpacity
-            style={styles.historyBtn}
-            onPress={() => router.push('/history-modal')}
-          >
-            <Ionicons name="time-outline" size={20} color={theme.colors.dark.primary} />
-            <Text style={styles.historyBtnText}>History</Text>
+          <TouchableOpacity style={styles.profileBtn}>
+            <Ionicons name="person-circle" size={40} color={theme.colors.dark.primary} />
           </TouchableOpacity>
         </View>
 
-        {/* Goal Summary */}
-        <View style={styles.goalCard}>
-          <View style={styles.goalHeader}>
-            <Ionicons name="trophy-outline" size={22} color={theme.colors.dark.primary} />
-            <Text style={styles.goalTitle}>Weight Goal Tracker</Text>
-          </View>
-          <View style={styles.goalStats}>
-            <View style={styles.statBox}>
-              <Text style={styles.statLabel}>Current</Text>
-              <Text style={styles.statValue}>{goal.currentWeight} kg</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statBox}>
-              <Text style={styles.statLabel}>Target</Text>
-              <Text style={styles.statValue}>{goal.targetWeight} kg</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statBox}>
-              <Text style={styles.statLabel}>Deficit</Text>
-              <Text style={styles.statValue}>{goal.dailyDeficit} kcal/d</Text>
+        {/* Today's Focus Card */}
+        <View style={styles.focusCard}>
+          <View style={styles.focusHeader}>
+            <Text style={styles.focusTitle}>Today's Focus</Text>
+            <View style={styles.focusBadge}>
+              <Text style={styles.focusBadgeText}>Leg Day</Text>
             </View>
           </View>
-        </View>
-
-        {/* Section Title */}
-        <Text style={styles.sectionTitle}>Health Calculators</Text>
-
-        {/* Calculator Grid */}
-        <View style={styles.grid}>
-          {calculatorLinks.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.calcCard}
-              onPress={() => router.push(item.route)}
-              activeOpacity={0.8}
-            >
-              <View style={[styles.iconContainer, { backgroundColor: item.color + '22' }]}>
-                <Ionicons name={item.icon} size={28} color={item.color} />
-              </View>
-              <Text style={styles.calcTitle}>{item.title}</Text>
-              <Text style={styles.calcSubtitle}>{item.subtitle}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Recent Activity */}
-        <View style={styles.recentHeader}>
-          <Text style={styles.sectionTitle}>Recent Logs</Text>
-          <TouchableOpacity onPress={() => router.push('/history-modal')}>
-            <Text style={styles.seeAllText}>See All</Text>
+          <Text style={styles.focusDesc}>Squats, Lunges, and Deadlifts are on the menu today.</Text>
+          
+          <TouchableOpacity style={styles.startWorkoutBtn} onPress={() => router.push('/workouts')}>
+            <Ionicons name="play" size={20} color="#121212" />
+            <Text style={styles.startWorkoutBtnText}>Start Workout</Text>
           </TouchableOpacity>
         </View>
 
-        {history.length === 0 ? (
-          <View style={styles.emptyCard}>
-            <Ionicons name="document-text-outline" size={32} color={theme.colors.dark.outline} />
-            <Text style={styles.emptyText}>No calculation logs yet. Try a calculator above!</Text>
-          </View>
-        ) : (
-          history.slice(0, 3).map((item) => (
-            <View key={item.id} style={styles.logCard}>
-              <View style={styles.logLeft}>
-                <Text style={styles.logType}>{item.type}</Text>
-                <Text style={styles.logResult}>{item.result}</Text>
-              </View>
-              <Text style={styles.logDate}>{new Date(item.date).toLocaleDateString()}</Text>
+        {/* Quick Log Buttons */}
+        <Text style={styles.sectionTitle}>Quick Log</Text>
+        <View style={styles.quickLogGrid}>
+          <TouchableOpacity style={styles.quickLogCard} onPress={() => router.push('/workouts')}>
+            <View style={[styles.iconBox, { backgroundColor: '#FF525222' }]}>
+              <Ionicons name="barbell" size={24} color="#FF5252" />
             </View>
-          ))
+            <Text style={styles.quickLogText}>Workout</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.quickLogCard} onPress={() => router.push('/food')}>
+            <View style={[styles.iconBox, { backgroundColor: '#4CAF5022' }]}>
+              <Ionicons name="restaurant" size={24} color="#4CAF50" />
+            </View>
+            <Text style={styles.quickLogText}>Food</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.quickLogCard} onPress={() => router.push('/water')}>
+            <View style={[styles.iconBox, { backgroundColor: '#03A9F422' }]}>
+              <Ionicons name="water" size={24} color="#03A9F4" />
+            </View>
+            <Text style={styles.quickLogText}>Water</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Daily Progress */}
+        <Text style={styles.sectionTitle}>Daily Progress</Text>
+        
+        {/* Calories */}
+        <View style={styles.progressCard}>
+          <View style={styles.progressHeader}>
+            <View style={styles.progressTitleRow}>
+              <Ionicons name="flame" size={18} color="#FF9800" />
+              <Text style={styles.progressTitle}>Calories</Text>
+            </View>
+            <Text style={styles.progressValues}>{totals.calories} / {calorieGoal} kcal</Text>
+          </View>
+          <AnimatedProgressBar progress={totals.calories / calorieGoal} color="#FF9800" />
+        </View>
+
+        {/* Protein */}
+        <View style={styles.progressCard}>
+          <View style={styles.progressHeader}>
+            <View style={styles.progressTitleRow}>
+              <Ionicons name="egg" size={18} color="#E91E63" />
+              <Text style={styles.progressTitle}>Protein</Text>
+            </View>
+            <Text style={styles.progressValues}>{totals.protein} / {proteinGoal} g</Text>
+          </View>
+          <AnimatedProgressBar progress={totals.protein / proteinGoal} color="#E91E63" />
+        </View>
+
+        {/* Steps */}
+        <View style={styles.progressCard}>
+          <View style={styles.progressHeader}>
+            <View style={styles.progressTitleRow}>
+              <Ionicons name="footsteps" size={18} color="#4CAF50" />
+              <Text style={styles.progressTitle}>Steps {stepSource === 'google_fit' ? '⌚' : stepSource === 'pedometer' ? '📱' : ''}</Text>
+            </View>
+            <Text style={styles.progressValues}>{steps.toLocaleString()} / 10,000</Text>
+          </View>
+          <AnimatedProgressBar progress={Math.min(steps / 10000, 1)} color="#4CAF50" />
+        </View>
+
+        {/* Water */}
+        <View style={styles.progressCard}>
+          <View style={styles.progressHeader}>
+            <View style={styles.progressTitleRow}>
+              <Ionicons name="water" size={18} color="#03A9F4" />
+              <Text style={styles.progressTitle}>Water</Text>
+            </View>
+            <Text style={styles.progressValues}>{waterIntake} / {waterGoal} ml</Text>
+          </View>
+          <AnimatedProgressBar progress={Math.min(waterIntake / waterGoal, 1)} color="#03A9F4" />
+        </View>
+
+        {/* Ad Banner (hidden for Pro users) */}
+        <AdBanner />
+
+        {/* Pro Upsell Card (only for free users) */}
+        {!isPremium && (
+          <TouchableOpacity style={styles.proCard} onPress={() => setPaywallVisible(true)} activeOpacity={0.85}>
+            <View style={styles.proCardInner}>
+              <View style={styles.proIconBox}>
+                <Ionicons name="sparkles" size={24} color="#FFD700" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.proTitle}>Upgrade to FitMetrics Pro</Text>
+                <Text style={styles.proSubtitle}>Remove ads • AI Coach • Barcode Scanner • Heatmaps</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={theme.colors.dark.onSurfaceVariant} />
+            </View>
+          </TouchableOpacity>
         )}
+
+        {/* Empty State Helper (To guide the user) */}
+        <View style={styles.helperCard}>
+          <Ionicons name="information-circle-outline" size={24} color={theme.colors.dark.outline} />
+          <Text style={styles.helperText}>Tap the buttons above to log your first activity of the day.</Text>
+        </View>
+
+        {/* Paywall Modal */}
+        <PaywallModal visible={paywallVisible} onClose={() => setPaywallVisible(false)} />
+
+        <View style={{ height: 80 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -139,168 +228,193 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.dark.background,
   },
   content: {
-    padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.hero,
+    padding: 24,
   },
-  heroCard: {
-    backgroundColor: theme.colors.dark.surface,
-    padding: theme.spacing.lg,
-    borderRadius: theme.shapes.large,
+  header: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing.lg,
+    alignItems: 'center',
+    marginBottom: 24,
   },
-  heroTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+  greeting: {
+    fontSize: 16,
+    color: theme.colors.dark.onSurfaceVariant,
+    marginBottom: 4,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
     color: theme.colors.dark.onSurface,
   },
-  heroSubtitle: {
-    fontSize: 13,
-    color: theme.colors.dark.onSurfaceVariant,
-    marginTop: 2,
+  profileBtn: {
+    padding: 4,
   },
-  historyBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.dark.surfaceVariant,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 4,
-  },
-  historyBtnText: {
-    color: theme.colors.dark.primary,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  goalCard: {
+  focusCard: {
     backgroundColor: theme.colors.dark.surface,
-    padding: theme.spacing.lg,
-    borderRadius: theme.shapes.large,
-    marginBottom: theme.spacing.xl,
+    borderRadius: 24,
+    padding: 24,
+    marginBottom: 32,
+    borderWidth: 1,
+    borderColor: theme.colors.dark.outline + '40',
   },
-  goalHeader: {
+  focusHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: theme.spacing.md,
+    marginBottom: 12,
   },
-  goalTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+  focusTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
     color: theme.colors.dark.onSurface,
   },
-  goalStats: {
+  focusBadge: {
+    backgroundColor: theme.colors.dark.primary + '33',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  focusBadgeText: {
+    color: theme.colors.dark.primary,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  focusDesc: {
+    fontSize: 14,
+    color: theme.colors.dark.onSurfaceVariant,
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  startWorkoutBtn: {
+    backgroundColor: theme.colors.dark.primary,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    backgroundColor: theme.colors.dark.surfaceVariant,
-    padding: theme.spacing.md,
-    borderRadius: theme.shapes.medium,
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 16,
+    gap: 8,
   },
-  statBox: {
-    alignItems: 'center',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: theme.colors.dark.onSurfaceVariant,
-  },
-  statValue: {
+  startWorkoutBtnText: {
+    color: '#121212',
     fontSize: 16,
-    fontWeight: '700',
-    color: theme.colors.dark.primary,
-    marginTop: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: 24,
-    backgroundColor: theme.colors.dark.outline + '44',
+    fontWeight: 'bold',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: 'bold',
     color: theme.colors.dark.onSurface,
-    marginBottom: theme.spacing.md,
+    marginBottom: 16,
   },
-  grid: {
+  quickLogGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.spacing.md,
-    marginBottom: theme.spacing.xl,
+    justifyContent: 'space-between',
+    marginBottom: 32,
   },
-  calcCard: {
-    width: '47.5%',
+  quickLogCard: {
     backgroundColor: theme.colors.dark.surface,
-    padding: theme.spacing.lg,
-    borderRadius: theme.shapes.large,
-    alignItems: 'flex-start',
+    width: '31%',
+    aspectRatio: 1,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.dark.outline + '40',
   },
-  iconContainer: {
+  iconBox: {
     width: 48,
     height: 48,
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: 8,
   },
-  calcTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+  quickLogText: {
+    fontSize: 14,
+    fontWeight: '600',
     color: theme.colors.dark.onSurface,
   },
-  calcSubtitle: {
-    fontSize: 12,
-    color: theme.colors.dark.onSurfaceVariant,
-    marginTop: 2,
+  progressCard: {
+    backgroundColor: theme.colors.dark.surface,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 12,
   },
-  recentHeader: {
+  progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: 12,
   },
-  seeAllText: {
-    color: theme.colors.dark.primary,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  emptyCard: {
-    backgroundColor: theme.colors.dark.surface,
-    padding: theme.spacing.xl,
-    borderRadius: theme.shapes.large,
+  progressTitleRow: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  emptyText: {
-    color: theme.colors.dark.onSurfaceVariant,
-    fontSize: 13,
-    textAlign: 'center',
-  },
-  logCard: {
-    backgroundColor: theme.colors.dark.surface,
-    padding: theme.spacing.md,
-    borderRadius: theme.shapes.medium,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.sm,
-  },
-  logLeft: {
-    gap: 2,
-  },
-  logType: {
-    fontSize: 14,
+  progressTitle: {
+    fontSize: 16,
     fontWeight: '600',
     color: theme.colors.dark.onSurface,
   },
-  logResult: {
-    fontSize: 12,
-    color: theme.colors.dark.primary,
+  progressValues: {
+    fontSize: 14,
+    color: theme.colors.dark.onSurfaceVariant,
+    fontWeight: '500',
   },
-  logDate: {
+  progressBarBg: {
+    height: 8,
+    backgroundColor: theme.colors.dark.surfaceVariant,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  helperCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.dark.surfaceVariant + '80',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 8,
+    gap: 12,
+  },
+  helperText: {
+    flex: 1,
+    fontSize: 14,
+    color: theme.colors.dark.onSurfaceVariant,
+    lineHeight: 20,
+  },
+  proCard: {
+    backgroundColor: theme.colors.dark.surface,
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 8,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: '#FFD700' + '60',
+  },
+  proCardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  proIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFD70022',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  proTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFD700',
+  },
+  proSubtitle: {
     fontSize: 12,
     color: theme.colors.dark.onSurfaceVariant,
+    marginTop: 2,
   },
 });

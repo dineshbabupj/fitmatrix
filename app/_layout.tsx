@@ -4,10 +4,16 @@ import { StatusBar } from 'expo-status-bar';
 import { TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import * as Linking from 'expo-linking';
 import { theme } from '../src/theme/theme';
 import { initDatabase } from '../src/data/db';
+import { handleAuthDeepLink } from '../src/services/supabase/supabaseClient';
 import { SyncStatusBanner } from '../src/components/SyncStatusBanner';
 import { useUserStore } from '../src/store/userStore';
+import { revenueCatService } from '../src/services/iap/revenueCatService';
+import { adMobManager } from '../src/services/admob/adMobManager';
+import { notificationService } from '../src/services/notifications/notificationService';
+import { ErrorBoundary } from '../src/components/ErrorBoundary';
 
 const customDarkTheme = {
   ...DarkTheme,
@@ -29,14 +35,60 @@ export default function RootLayout() {
   React.useEffect(() => {
     async function setup() {
       try {
+        // Critical path: DB + auth only. Keeps startup fast.
         await initDatabase();
+        const { loadPersistedAuth } = require('../src/store/userAuthStore').useUserAuthStore.getState();
+        await loadPersistedAuth();
       } catch (e) {
-        console.error('Failed to initialize database:', e);
+        console.error('Failed to initialize app:', e);
       } finally {
         setIsDbReady(true);
       }
+
+      // Deferred: heavy native SDKs that can ANR on first launch
+      // (AdMob class verification + RevenueCat) run after the UI is visible.
+      try {
+        await revenueCatService.init();
+      } catch (e) {
+        console.warn('RevenueCat init deferred:', e);
+      }
+      try {
+        await adMobManager.init();
+      } catch (e) {
+        console.warn('AdMob init deferred:', e);
+      }
+
+      // Request notification permissions and schedule reminders
+      try {
+        const granted = await notificationService.requestPermissions();
+        if (granted) {
+          await notificationService.scheduleWorkoutReminder();
+          await notificationService.scheduleWaterReminder();
+        }
+      } catch (e) {
+        console.warn('Notification setup deferred:', e);
+      }
     }
     setup();
+  }, []);
+
+  // Handle deep links for auth callbacks (email magic link, Google OAuth)
+  React.useEffect(() => {
+    // Handle URL that opened the app
+    const subscription = Linking.addEventListener('url', ({ url }) => {
+      console.log('[RootLayout] Deep link URL:', url);
+      handleAuthDeepLink(url);
+    });
+
+    // Check if app was opened from a deep link
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        console.log('[RootLayout] Initial deep link URL:', url);
+        handleAuthDeepLink(url);
+      }
+    });
+
+    return () => subscription.remove();
   }, []);
 
   React.useEffect(() => {
@@ -54,6 +106,7 @@ export default function RootLayout() {
   }
 
   return (
+    <ErrorBoundary>
     <ThemeProvider value={customDarkTheme}>
       <StatusBar style="light" backgroundColor="transparent" translucent={true} />
       <SyncStatusBanner />
@@ -155,8 +208,12 @@ export default function RootLayout() {
             ),
           }}
         />
+        <Stack.Screen name="food/index" options={{ headerShown: false }} />
+        <Stack.Screen name="food/scanner" options={{ headerShown: false }} />
+        <Stack.Screen name="water/index" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

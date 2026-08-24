@@ -155,6 +155,11 @@ export default function NewWorkoutScreen() {
           const historyText = history && history.sets.length > 0 
             ? `Last time: ${history.sets.length} sets, max ${Math.max(...history.sets.map(s => s.weight))}kg` 
             : null;
+            
+          const overloadTarget = useWorkoutStore.getState().getProgressiveOverloadTarget(exercise.name);
+          const targetText = overloadTarget 
+            ? `Aim for: ${overloadTarget.targetWeight}kg x ${overloadTarget.targetReps} (Overload)` 
+            : null;
 
           return (
           <View key={exercise.id} style={styles.exerciseCard}>
@@ -162,6 +167,7 @@ export default function NewWorkoutScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={styles.exerciseName}>{index + 1}. {exercise.name}</Text>
                 {historyText && <Text style={styles.historyText}>{historyText}</Text>}
+                {targetText && <Text style={styles.targetText}>{targetText}</Text>}
               </View>
               <TouchableOpacity 
                 style={styles.restTimeChip} 
@@ -334,6 +340,12 @@ const styles = StyleSheet.create({
     color: theme.colors.dark.outline,
     marginTop: 2,
   },
+  targetText: {
+    ...theme.typography.caption,
+    color: theme.colors.dark.primary,
+    fontWeight: 'bold',
+    marginTop: 2,
+  },
   setHeaderRow: {
     flexDirection: 'row',
     marginBottom: theme.spacing.sm,
@@ -361,6 +373,7 @@ const styles = StyleSheet.create({
   },
   setInput: {
     flex: 1,
+    height: 56,
     backgroundColor: theme.colors.dark.background,
     borderRadius: theme.shapes.medium,
     color: theme.colors.dark.onSurface,
@@ -378,9 +391,9 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   checkButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: theme.colors.dark.surfaceVariant,
     alignItems: 'center',
     justifyContent: 'center',
@@ -390,8 +403,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.dark.primary,
   },
   removeSetButton: {
-    width: 36,
-    height: 36,
+    width: 56,
+    height: 56,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -425,6 +438,7 @@ const styles = StyleSheet.create({
   },
   exerciseInput: {
     flex: 1,
+    height: 56,
     backgroundColor: theme.colors.dark.surface,
     borderRadius: theme.shapes.large,
     padding: theme.spacing.md,
@@ -434,6 +448,7 @@ const styles = StyleSheet.create({
   addButton: {
     backgroundColor: theme.colors.dark.primary,
     width: 56,
+    height: 56,
     borderRadius: theme.shapes.large,
     justifyContent: 'center',
     alignItems: 'center',

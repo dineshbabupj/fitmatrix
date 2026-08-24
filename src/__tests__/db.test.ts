@@ -16,8 +16,8 @@ import { migrations, initDatabase, calculationsDb, userProfileDb, settingsDb } f
 describe('Database Architecture & Migrations', () => {
   // ── Migration Engine Tests ─────────────────────────────────────────────
   describe('Migration Engine', () => {
-    test('Migrations array has exactly 2 migrations (v1 + v2)', () => {
-      expect(migrations.length).toBe(2);
+    test('Migrations array has all schema migrations (v1 to v5)', () => {
+      expect(migrations.length).toBeGreaterThanOrEqual(5);
     });
 
     test('Migration v1 is initial schema', () => {

@@ -1,10 +1,69 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ADMOB_UNITS, USE_PRODUCTION_ADS } from '../services/admob/adMobConfig';
 import { theme } from '../theme/theme';
+import { useUserStore } from '../store/userStore';
+import { revenueCatService } from '../services/iap/revenueCatService';
+
+let BannerAd: any;
+let BannerAdSize: any;
+let TestIds: any;
+
+try {
+  const admob = require('react-native-google-mobile-ads');
+  BannerAd = admob.BannerAd;
+  BannerAdSize = admob.BannerAdSize;
+  TestIds = admob.TestIds;
+} catch {
+  // Expo Go fallback
+}
 
 export const AdBanner: React.FC = () => {
+  const isPremium = useUserStore((state) => state.isPremium);
+  const [adsRemoved, setAdsRemoved] = useState<boolean>(isPremium);
+  const [adFailed, setAdFailed] = useState<boolean>(false);
+
+  useEffect(() => {
+    revenueCatService.hasAdsRemoved().then((removed) => {
+      setAdsRemoved(removed || isPremium);
+    });
+  }, [isPremium]);
+
+  // Completely hide banner for Pro / Ad-Free users
+  if (adsRemoved || isPremium) {
+    return null;
+  }
+
+  const adUnitId = USE_PRODUCTION_ADS && ADMOB_UNITS.banner
+    ? ADMOB_UNITS.banner
+    : (TestIds?.BANNER || 'ca-app-pub-3940256099942544/6300978111');
+
+  if (BannerAd && BannerAdSize && !adFailed && Platform.OS !== 'web') {
+    return (
+      <View style={styles.adWrapper}>
+        <View style={styles.badgeRow}>
+          <View style={styles.adBadge}>
+            <Text style={styles.adBadgeText}>Ad</Text>
+          </View>
+          <Text style={styles.adTitle}>Sponsored</Text>
+        </View>
+        <BannerAd
+          unitId={adUnitId}
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER || BannerAdSize.BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+          onAdFailedToLoad={(error: any) => {
+            console.log('[AdBanner] Failed to load AdMob banner:', error);
+            setAdFailed(true);
+          }}
+        />
+      </View>
+    );
+  }
+
+  // Fallback visual sponsor banner for Expo Go or when offline
   return (
     <View style={styles.container}>
       <View style={styles.badgeRow}>
@@ -19,7 +78,7 @@ export const AdBanner: React.FC = () => {
         <View style={styles.bannerTextGroup}>
           <Text style={styles.bannerHeading}>Track Your Workouts with Precision</Text>
           <Text style={styles.bannerSub}>
-            {USE_PRODUCTION_ADS ? 'Google AdMob' : 'Google AdMob Test Unit'} • {ADMOB_UNITS.banner?.slice(0, 25)}...
+            {USE_PRODUCTION_ADS ? 'Google AdMob' : 'Google AdMob Test Unit'}
           </Text>
         </View>
       </View>
@@ -28,6 +87,14 @@ export const AdBanner: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  adWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: theme.spacing.sm,
+    backgroundColor: theme.colors.dark.surface,
+    paddingVertical: 8,
+    borderRadius: theme.shapes.medium,
+  },
   container: {
     backgroundColor: theme.colors.dark.surface,
     borderWidth: 1,

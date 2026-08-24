@@ -1,0 +1,45 @@
+# ═══════════════════════════════════════════════════════════════════════
+# 07 - Google Authentication Flow
+# ═══════════════════════════════════════════════════════════════════════
+# Tests: Settings → Sign In → Auth Modal → Google → Guest Skip → Sign Out
+appId: com.trichy360media.fitmetrics
+---
+# Step 1: Navigate to Settings tab
+- tapOn: "Settings"
+- assertVisible: "Settings"
+- assertVisible: "Upgrade to Premium"
+- assertVisible: "Guest User (Offline Mode)"
+
+# Step 2: Open Auth Modal
+- tapOn: "Sign In / Register"
+- assertVisible: "FitMetrics Account"
+- assertVisible: "Sign in to auto-backup"
+- assertVisible: "Google"
+- assertVisible: "Email"
+
+# Step 3: Verify Google tab is default
+- assertVisible: "Continue with Google"
+
+# Step 4: Test Guest Skip option
+- assertVisible: "Continue as Guest"
+- tapOn: "Continue as Guest"
+- assertVisible: "Guest User (Offline Mode)"
+
+# Step 5: Re-open Auth Modal and try Email tab
+- tapOn: "Sign In / Register"
+- assertVisible: "FitMetrics Account"
+- tapOn: "Email"
+- assertVisible: "Email Address"
+- assertVisible: "name@example.com"
+- assertVisible: "Sign In with Email"
+
+# Close modal
+- tapOn:
+    text: "×"
+    optional: true
+
+# Step 6: Verify guest state persists
+- tapOn: "Home"
+- assertVisible: "Today's Focus"
+- tapOn: "Settings"
+- assertVisible: "Guest User (Offline Mode)"

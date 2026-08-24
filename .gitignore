@@ -6,3 +6,20 @@ yarn-debug.*
 yarn-error.*
 *.user
 .DS_Store
+
+# Sensitive files
+.env
+.env.*
+credentials.json
+keystore.jks
+google-services.json
+android/app/google-services.json
+android/app/src/main/assets/
+android/app/src/main/res/drawable-*
+android/app/src/main/res/raw/
+*.apk
+*.aab
+screen*.png
+ui*.xml
+dist/
+dist-release/

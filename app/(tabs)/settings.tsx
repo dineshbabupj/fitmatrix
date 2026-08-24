@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../src/theme/theme';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useUserStore } from '../../src/store/userStore';
+import { useUserAuthStore } from '../../src/store/userAuthStore';
 import { PaywallModal } from '../../src/components/PaywallModal';
+import { AuthModal } from '../../src/components/AuthModal';
+import { revenueCatService } from '../../src/services/iap/revenueCatService';
+import { pdfExportService } from '../../src/services/export/pdfExportService';
+import { cloudSyncService } from '../../src/services/sync/cloudSyncService';
 
 export default function SettingsTab() {
   const {
@@ -26,12 +31,26 @@ export default function SettingsTab() {
   } = useSettingsStore();
 
   const { isPremium, setPremiumStatus } = useUserStore();
+  const { user, isAuthenticated, isGuest, openAuthModal, logout, lastSyncedAt, isSyncing } = useUserAuthStore();
   const [paywallVisible, setPaywallVisible] = useState(false);
 
-  const handlePurchaseSuccess = () => {
-    setPremiumStatus(true);
+  // Check real entitlement status on mount
+  useEffect(() => {
+    revenueCatService.hasProAccess().then((hasPro) => {
+      if (hasPro !== isPremium) setPremiumStatus(hasPro);
+    });
+  }, []);
+
+  const handlePurchaseSuccess = async () => {
+    const hasPro = await revenueCatService.hasProAccess();
+    setPremiumStatus(hasPro);
     setPaywallVisible(false);
-    Alert.alert('🎉 Premium Unlocked', 'Thank you for upgrading to FitMetrics Premium! All features & charts are now unlocked.');
+    Alert.alert('🎉 Premium Unlocked', 'Thank you for upgrading to FitMetrics Pro! All features & charts are now unlocked.');
+  };
+
+  const handleManualSync = async () => {
+    const res = await cloudSyncService.syncAllData();
+    Alert.alert(res.success ? 'Cloud Backup Complete ☁️' : 'Sync Status', res.message);
   };
 
   return (
@@ -72,6 +91,52 @@ export default function SettingsTab() {
             <Text style={styles.activeBadgeText}>All Features Unlocked</Text>
           </View>
         )}
+      </View>
+
+      {/* Account & Cloud Sync Section */}
+      <Text style={styles.sectionHeader}>Account & Cloud Backup</Text>
+      <View style={styles.card}>
+        <View style={styles.settingRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.settingLabel}>
+              {isAuthenticated ? user?.displayName || user?.phoneNumber || user?.email : 'Guest User (Offline Mode)'}
+            </Text>
+            <Text style={styles.settingDesc}>
+              {isAuthenticated
+                ? `Phone/Email: ${user?.phoneNumber || user?.email || 'Verified'}`
+                : 'Sign in with Mobile OTP to backup workouts & progress'}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.authActionBtn}
+            onPress={isAuthenticated ? logout : openAuthModal}
+          >
+            <Text style={styles.authActionText}>
+              {isAuthenticated ? 'Sign Out' : 'Sign In / Register'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.settingRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.settingLabel}>Cloud Data Sync</Text>
+            <Text style={styles.settingDesc}>
+              {lastSyncedAt
+                ? `Last backed up: ${new Date(lastSyncedAt).toLocaleTimeString()}`
+                : 'Auto-syncs local SQLite data to Cloud'}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.syncBtn}
+            onPress={handleManualSync}
+            disabled={isSyncing}
+          >
+            <Ionicons name={isSyncing ? 'sync-circle' : 'cloud-upload-outline'} size={18} color="#4CAF50" />
+            <Text style={styles.syncBtnText}>{isSyncing ? 'Syncing...' : 'Sync Now'}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Unit System Preferences */}
@@ -142,6 +207,26 @@ export default function SettingsTab() {
       </View>
 
       {/* App Info & About */}
+      <Text style={styles.sectionHeader}>Export & Data</Text>
+      <View style={styles.card}>
+        <TouchableOpacity
+          style={styles.settingRow}
+          onPress={async () => {
+            const success = await pdfExportService.generateReport();
+            if (!success) {
+              setPaywallVisible(true);
+            }
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={styles.settingLabel}>Export PDF Health Report 🔒</Text>
+            <Text style={styles.settingDesc}>Generate a 30-day health summary for your Personal Trainer</Text>
+          </View>
+          <Ionicons name="document-text-outline" size={22} color={theme.colors.dark.primary} />
+        </TouchableOpacity>
+      </View>
+
+      {/* App Info & About */}
       <Text style={styles.sectionHeader}>About</Text>
       <View style={styles.card}>
         <View style={styles.infoRow}>
@@ -154,12 +239,13 @@ export default function SettingsTab() {
         </View>
       </View>
 
-      {/* Paywall Modal */}
+      {/* Paywall & Auth Modals */}
       <PaywallModal
         visible={paywallVisible}
         onClose={() => setPaywallVisible(false)}
         onSuccess={handlePurchaseSuccess}
       />
+      <AuthModal />
       </ScrollView>
     </SafeAreaView>
   );
@@ -299,5 +385,32 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 13,
     color: theme.colors.dark.onSurfaceVariant,
+  },
+  authActionBtn: {
+    backgroundColor: theme.colors.dark.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: theme.shapes.medium,
+  },
+  authActionText: {
+    color: theme.colors.dark.onPrimary,
+    fontWeight: '700',
+    fontSize: 12,
+  },
+  syncBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#2A2A2A',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: theme.shapes.medium,
+    borderWidth: 1,
+    borderColor: '#4CAF50',
+  },
+  syncBtnText: {
+    color: '#4CAF50',
+    fontWeight: '700',
+    fontSize: 12,
   },
 });

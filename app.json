@@ -2,7 +2,7 @@
   "expo": {
     "name": "FitMetrics",
     "slug": "fitmetrics",
-    "version": "1.1.1",
+    "version": "1.4.0",
     "orientation": "portrait",
     "scheme": "fitmetrics",
     "icon": "./assets/icon.png",
@@ -14,7 +14,13 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.trichy360media.fitmetrics"
+      "bundleIdentifier": "com.trichy360media.fitmetrics",
+      "infoPlist": {
+        "NSMotionUsageDescription": "FitMetrics requires motion permission to count your daily steps."
+      },
+      "associatedDomains": [
+        "applinks:fitmetrics.app"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -22,16 +28,35 @@
         "backgroundColor": "#4CAF50"
       },
       "package": "com.trichy360media.fitmetrics",
-      "versionCode": 9,
+      "versionCode": 33,
       "backgroundColor": "#121212",
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.ACTIVITY_RECOGNITION",
+        "android.permission.CAMERA"
+      ],
       "blockedPermissions": [
-        "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.READ_PHONE_STATE",
         "android.permission.READ_CONTACTS",
         "android.permission.WRITE_CONTACTS",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "fitmetrics",
+              "host": "*"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
       ]
     },
     "web": {
@@ -46,7 +71,8 @@
         {
           "android": {
             "compileSdkVersion": 36,
-            "targetSdkVersion": 36
+            "targetSdkVersion": 36,
+            "kotlinVersion": "1.9.24"
           }
         }
       ]
@@ -56,9 +82,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "c30c8833-e0fb-43ac-bd30-381c2f71d905"
+        "projectId": "6eaf52cf-cb6f-4e32-a31b-51b9c96c809b"
       }
     },
-    "owner": "jdjkv"
+    "owner": "kloolps-team"
   }
 }

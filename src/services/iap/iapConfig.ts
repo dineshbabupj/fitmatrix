@@ -3,8 +3,8 @@ import { Platform } from 'react-native';
 export const REVENUECAT_KEYS = {
   apiKey: Platform.select({
     ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || 'appl_FitMetricsDemoIosKey2026',
-    android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || 'goog_FitMetricsDemoAndroidKey2026',
-    default: 'goog_FitMetricsDemoAndroidKey2026',
+    android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || 'goog_kCRVFNDZejsPKkNuQIXmVdhNzcx',
+    default: '',
   }),
 };
 
@@ -12,6 +12,7 @@ export const IAP_PRODUCT_IDS = {
   removeAds: 'remove_ads',
   premiumMonthly: 'premium_monthly',
   premiumYearly: 'premium_yearly',
+  premiumLifetime: 'premium_lifetime',
 };
 
 export const ENTITLEMENT_IDS = {
@@ -43,19 +44,28 @@ export const PRODUCT_DETAILS: Record<string, IAPProduct> = {
     id: IAP_PRODUCT_IDS.premiumMonthly,
     type: 'subscription',
     title: 'FitMetrics Pro (Monthly)',
-    price: '$2.99',
-    priceAmount: 2.99,
+    price: '$4.99',
+    priceAmount: 4.99,
     period: '/month',
-    description: 'Unlock advanced trend charts, PDF export, & custom themes.',
+    description: 'Ad-free + AI Coach + Barcode Scanner + Heatmap.',
   },
   [IAP_PRODUCT_IDS.premiumYearly]: {
     id: IAP_PRODUCT_IDS.premiumYearly,
     type: 'subscription',
     title: 'FitMetrics Pro (Yearly)',
-    price: '$19.99',
-    priceAmount: 19.99,
+    price: '$29.99',
+    priceAmount: 29.99,
     period: '/year',
-    savingsBadge: 'SAVE 44%',
-    description: 'Best Value! Full access to all pro features for a whole year.',
+    savingsBadge: 'SAVE 50%',
+    description: 'Best value subscription! All Pro features for a full year.',
+  },
+  [IAP_PRODUCT_IDS.premiumLifetime]: {
+    id: IAP_PRODUCT_IDS.premiumLifetime,
+    type: 'non_consumable',
+    title: 'FitMetrics Pro (Lifetime)',
+    price: '$79.99',
+    priceAmount: 79.99,
+    savingsBadge: 'BEST DEAL',
+    description: 'One-time payment. All Pro features unlocked forever. No recurring charges.',
   },
 };

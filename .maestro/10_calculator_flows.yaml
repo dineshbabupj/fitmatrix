@@ -1,0 +1,90 @@
+# ═══════════════════════════════════════════════════════════════════════
+# 10 - Calculator Flows (BMI + BMR)
+# ═══════════════════════════════════════════════════════════════════════
+# Tests: Calculators tab → BMI calc → BMR calc → Verify results
+appId: com.trichy360media.fitmetrics
+---
+# ═══════ PART A: BMI Calculator ═══════
+# Navigate to Calculators
+- tapOn: "Calculators"
+- assertVisible: "Standard Calculators"
+
+# Open BMI Calculator
+- tapOn: "BMI Calculator"
+- assertVisible: "Body Mass Index (BMI)"
+- assertVisible: "Metric (cm / kg)"
+
+# Enter BMI inputs
+- tapOn: "Age (Years) *"
+- inputText:
+    text: "25"
+    clearText: true
+
+- tapOn: "Height (cm) *"
+- inputText:
+    text: "175"
+    clearText: true
+
+- tapOn: "Weight (kg) *"
+- inputText:
+    text: "70"
+    clearText: true
+
+# Calculate
+- tapOn: "Calculate BMI"
+- assertVisible: "Your BMI Result"
+
+# Go back to Calculators
+- tapOn:
+    text: "←"
+    optional: true
+- tapOn:
+    text: "Back"
+    optional: true
+
+# ═══════ PART B: BMR Calculator ═══════
+- tapOn: "Calculators"
+- tapOn: "BMR Calculator"
+- assertVisible: "Basal Metabolic Rate"
+
+# Enter BMR inputs
+- tapOn: "Age (Years) *"
+- inputText:
+    text: "30"
+    clearText: true
+
+- tapOn: "Height (cm) *"
+- inputText:
+    text: "180"
+    clearText: true
+
+- tapOn: "Weight (kg) *"
+- inputText:
+    text: "80"
+    clearText: true
+
+# Calculate BMR
+- tapOn: "Calculate BMR"
+- assertVisible:
+    text: "kcal"
+    optional: true
+
+# ═══════ PART C: Imperial Unit Toggle ═══════
+- tapOn:
+    text: "←"
+    optional: true
+- tapOn:
+    text: "Back"
+    optional: true
+- tapOn: "Calculators"
+- tapOn: "BMI Calculator"
+
+# Switch to Imperial
+- tapOn: "Imperial (ft/in, lbs)"
+- assertVisible: "Height (Feet & Inches) *"
+- assertVisible: "Weight (lbs) *"
+
+# Switch back to Metric
+- tapOn: "Metric (cm / kg)"
+- assertVisible: "Height (cm) *"
+- assertVisible: "Weight (kg) *"

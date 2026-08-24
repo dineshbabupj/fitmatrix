@@ -1,130 +1,182 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
-  Dimensions,
   TouchableOpacity,
+  SafeAreaView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../src/theme/theme';
 import { useUserStore } from '../src/store/userStore';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-interface Slide {
-  id: string;
-  title: string;
-  subtitle: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  color: string;
-}
-
-const slides: Slide[] = [
-  {
-    id: '1',
-    title: 'Precision Health Calculators',
-    subtitle: 'Calculate your BMI, BMR, Body Fat percentage, and Ideal Weight using clinically validated formulas.',
-    icon: 'fitness-outline',
-    color: '#4CAF50',
-  },
-  {
-    id: '2',
-    title: 'Offline-First & Cloud Sync',
-    subtitle: 'Your data is saved instantly to local SQLite storage. Syncs seamlessly with the cloud when online.',
-    icon: 'cloud-offline-outline',
-    color: '#FF9800',
-  },
-  {
-    id: '3',
-    title: 'Track Analytics & Progress',
-    subtitle: 'Visualize your health trends over 7d, 30d, 90d with interactive charts and personalized tips.',
-    icon: 'stats-chart-outline',
-    color: '#00BCD4',
-  },
-];
+type Step = 'GOAL' | 'PROFILE' | 'FIRST_WIN';
 
 export default function OnboardingScreen() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const flatListRef = useRef<FlatList>(null);
-  const setHasCompletedOnboarding = useUserStore((state) => state.setHasCompletedOnboarding);
+  const [step, setStep] = useState<Step>('GOAL');
+  
+  // Local state for profile step
+  const [age, setAge] = useState('25');
+  const [weight, setWeight] = useState('70');
+  const [gender, setGender] = useState<'male' | 'female'>('male');
+  
+  const { setProfile, setHasCompletedOnboarding } = useUserStore();
+
+  const handleGoalSelect = (goal: 'lose_weight' | 'build_muscle' | 'stay_fit') => {
+    setProfile({ goal });
+    setStep('PROFILE');
+  };
+
+  const handleProfileSubmit = () => {
+    setProfile({
+      age: parseInt(age) || 25,
+      weightKg: parseInt(weight) || 70,
+      gender,
+    });
+    setStep('FIRST_WIN');
+  };
 
   const handleFinish = () => {
     setHasCompletedOnboarding(true);
     router.replace('/(tabs)');
   };
 
-  const handleNext = () => {
-    if (currentIndex < slides.length - 1) {
-      flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      handleFinish();
-    }
-  };
+  if (step === 'GOAL') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          <Text style={styles.title}>What's your main goal?</Text>
+          <Text style={styles.subtitle}>We'll personalize FitMetrics for you.</Text>
+          
+          <View style={styles.optionsContainer}>
+            <TouchableOpacity style={styles.goalCard} onPress={() => handleGoalSelect('lose_weight')} activeOpacity={0.8}>
+              <View style={[styles.iconBox, { backgroundColor: '#FF525222' }]}>
+                <Ionicons name="flame" size={32} color="#FF5252" />
+              </View>
+              <View style={styles.goalTextContainer}>
+                <Text style={styles.goalTitle}>Lose Weight</Text>
+                <Text style={styles.goalSub}>Burn fat and get lean</Text>
+              </View>
+            </TouchableOpacity>
 
-  return (
-    <View style={styles.container}>
-      {/* Skip Button */}
-      <View style={styles.header}>
-        {currentIndex < slides.length - 1 ? (
-          <TouchableOpacity onPress={handleFinish}>
-            <Text style={styles.skipText}>Skip</Text>
-          </TouchableOpacity>
-        ) : <View />}
-      </View>
+            <TouchableOpacity style={styles.goalCard} onPress={() => handleGoalSelect('build_muscle')} activeOpacity={0.8}>
+              <View style={[styles.iconBox, { backgroundColor: '#2196F322' }]}>
+                <Ionicons name="barbell" size={32} color="#2196F3" />
+              </View>
+              <View style={styles.goalTextContainer}>
+                <Text style={styles.goalTitle}>Build Muscle</Text>
+                <Text style={styles.goalSub}>Gain strength and size</Text>
+              </View>
+            </TouchableOpacity>
 
-      {/* Slides FlatList */}
-      <FlatList
-        ref={flatListRef}
-        data={slides}
-        keyExtractor={(item) => item.id}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(e) => {
-          const index = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
-          setCurrentIndex(index);
-        }}
-        renderItem={({ item }) => (
-          <View style={styles.slide}>
-            <View style={[styles.iconContainer, { backgroundColor: item.color + '22' }]}>
-              <Ionicons name={item.icon} size={80} color={item.color} />
-            </View>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.subtitle}>{item.subtitle}</Text>
+            <TouchableOpacity style={styles.goalCard} onPress={() => handleGoalSelect('stay_fit')} activeOpacity={0.8}>
+              <View style={[styles.iconBox, { backgroundColor: '#4CAF5022' }]}>
+                <Ionicons name="heart" size={32} color="#4CAF50" />
+              </View>
+              <View style={styles.goalTextContainer}>
+                <Text style={styles.goalTitle}>Stay Fit</Text>
+                <Text style={styles.goalSub}>Maintain a healthy lifestyle</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        )}
-      />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
-      {/* Pagination Dots & Next CTA */}
-      <View style={styles.footer}>
-        <View style={styles.dotsRow}>
-          {slides.map((_, idx) => (
-            <View
-              key={idx}
-              style={[
-                styles.dot,
-                currentIndex === idx ? styles.activeDot : undefined,
-              ]}
-            />
-          ))}
+  if (step === 'PROFILE') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.content}
+        >
+          <TouchableOpacity onPress={() => setStep('GOAL')} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={theme.colors.dark.onSurface} />
+          </TouchableOpacity>
+          
+          <Text style={styles.title}>Quick Profile</Text>
+          <Text style={styles.subtitle}>Just the basics to calculate your needs.</Text>
+          
+          <View style={styles.formContainer}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Age</Text>
+              <TextInput
+                style={styles.input}
+                value={age}
+                onChangeText={setAge}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Weight (kg)</Text>
+              <TextInput
+                style={styles.input}
+                value={weight}
+                onChangeText={setWeight}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+            </View>
+
+            <View style={styles.genderContainer}>
+              <TouchableOpacity 
+                style={[styles.genderButton, gender === 'male' && styles.genderActive]} 
+                onPress={() => setGender('male')}
+              >
+                <Text style={[styles.genderText, gender === 'male' && styles.genderTextActive]}>Male</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.genderButton, gender === 'female' && styles.genderActive]} 
+                onPress={() => setGender('female')}
+              >
+                <Text style={[styles.genderText, gender === 'female' && styles.genderTextActive]}>Female</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <TouchableOpacity style={styles.primaryButton} onPress={handleProfileSubmit}>
+            <Text style={styles.primaryButtonText}>Continue</Text>
+            <Ionicons name="arrow-forward" size={20} color="#fff" />
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
+  }
+
+  // FIRST WIN STEP
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={[styles.content, { justifyContent: 'center', alignItems: 'center' }]}>
+        <View style={styles.successCircle}>
+          <Ionicons name="checkmark" size={60} color="#4CAF50" />
+        </View>
+        <Text style={[styles.title, { textAlign: 'center', marginTop: 24 }]}>You're all set!</Text>
+        <Text style={[styles.subtitle, { textAlign: 'center', marginBottom: 40 }]}>
+          Based on your profile, your daily calorie goal is ~2200 kcal.
+        </Text>
+
+        <View style={styles.firstWinCard}>
+          <Text style={styles.firstWinTitle}>Let's log your first workout!</Text>
+          <Text style={styles.firstWinSub}>Experience how easy it is to track.</Text>
+          
+          <TouchableOpacity style={styles.logButton} onPress={handleFinish}>
+            <Ionicons name="play" size={20} color="#121212" />
+            <Text style={styles.logButtonText}>Start Quick Workout</Text>
+          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.nextBtn} onPress={handleNext} activeOpacity={0.8}>
-          <Text style={styles.nextBtnText}>
-            {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
-          </Text>
-          <Ionicons
-            name={currentIndex === slides.length - 1 ? 'checkmark' : 'arrow-forward'}
-            size={20}
-            color={theme.colors.dark.onPrimary}
-          />
+        <TouchableOpacity style={styles.skipLink} onPress={handleFinish}>
+          <Text style={styles.skipLinkText}>Skip to dashboard</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -133,77 +185,174 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.dark.background,
   },
-  header: {
-    paddingTop: 48,
-    paddingHorizontal: theme.spacing.lg,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    height: 90,
-  },
-  skipText: {
-    color: theme.colors.dark.onSurfaceVariant,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  slide: {
-    width: SCREEN_WIDTH,
-    alignItems: 'center',
+  content: {
+    flex: 1,
+    padding: 24,
     justifyContent: 'center',
-    paddingHorizontal: theme.spacing.hero,
   },
-  iconContainer: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: theme.spacing.hero,
+  backButton: {
+    position: 'absolute',
+    top: 24,
+    left: 24,
+    zIndex: 10,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 28,
+    fontWeight: 'bold',
     color: theme.colors.dark.onSurface,
-    textAlign: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 16,
     color: theme.colors.dark.onSurfaceVariant,
-    textAlign: 'center',
-    lineHeight: 22,
+    marginBottom: 40,
   },
-  footer: {
-    paddingHorizontal: theme.spacing.xl,
-    paddingBottom: theme.spacing.hero,
-    gap: theme.spacing.xl,
+  optionsContainer: {
+    gap: 16,
   },
-  dotsRow: {
+  goalCard: {
     flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.dark.surface,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.dark.outline,
+  },
+  iconBox: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  goalTextContainer: {
+    flex: 1,
+  },
+  goalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: theme.colors.dark.onSurface,
+    marginBottom: 4,
+  },
+  goalSub: {
+    fontSize: 14,
+    color: theme.colors.dark.onSurfaceVariant,
+  },
+  formContainer: {
+    gap: 20,
+    marginBottom: 40,
+  },
+  inputGroup: {
     gap: 8,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: theme.colors.dark.surfaceVariant,
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.dark.onSurfaceVariant,
   },
-  activeDot: {
-    width: 24,
-    backgroundColor: theme.colors.dark.primary,
+  input: {
+    backgroundColor: theme.colors.dark.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.dark.outline,
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 18,
+    color: theme.colors.dark.onSurface,
   },
-  nextBtn: {
+  genderContainer: {
+    flexDirection: 'row',
+    gap: 16,
+    marginTop: 8,
+  },
+  genderButton: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.dark.outline,
+    alignItems: 'center',
+  },
+  genderActive: {
     backgroundColor: theme.colors.dark.primary,
-    paddingVertical: 14,
-    borderRadius: theme.shapes.large,
+    borderColor: theme.colors.dark.primary,
+  },
+  genderText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.dark.onSurface,
+  },
+  genderTextActive: {
+    color: '#fff',
+  },
+  primaryButton: {
+    backgroundColor: theme.colors.dark.primary,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 30,
+    gap: 8,
+  },
+  primaryButtonText: {
+    color: '#121212',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  successCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#4CAF5022',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  firstWinCard: {
+    backgroundColor: theme.colors.dark.surface,
+    borderRadius: 20,
+    padding: 24,
+    width: '100%',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.dark.primary + '55',
+  },
+  firstWinTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: theme.colors.dark.onSurface,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  firstWinSub: {
+    fontSize: 14,
+    color: theme.colors.dark.onSurfaceVariant,
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  logButton: {
+    backgroundColor: theme.colors.dark.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 30,
     gap: 8,
+    width: '100%',
   },
-  nextBtnText: {
-    color: theme.colors.dark.onPrimary,
+  logButtonText: {
+    color: '#121212',
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: 'bold',
+  },
+  skipLink: {
+    marginTop: 24,
+    padding: 12,
+  },
+  skipLinkText: {
+    color: theme.colors.dark.onSurfaceVariant,
+    fontSize: 14,
+    textDecorationLine: 'underline',
   },
 });

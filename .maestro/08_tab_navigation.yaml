@@ -1,0 +1,46 @@
+# ═══════════════════════════════════════════════════════════════════════
+# 08 - Tab Navigation (All 5 Tabs)
+# ═══════════════════════════════════════════════════════════════════════
+# Verifies that all 5 bottom tabs load their respective screens
+appId: com.trichy360media.fitmetrics
+---
+# Step 1: Home tab (default)
+- assertVisible: "Today's Focus"
+- assertVisible: "Quick Log"
+
+# Step 2: Calculators tab
+- tapOn: "Calculators"
+- assertVisible: "Standard Calculators"
+- assertVisible: "BMI Calculator"
+- assertVisible: "BMR Calculator"
+- assertVisible: "Body Fat Calculator"
+- assertVisible: "Ideal Weight Calculator"
+- assertVisible: "Macro Calculator"
+
+# Step 3: Workouts tab
+- tapOn: "Workouts"
+- assertVisible: "Workout Log"
+- assertVisible: "Log Workout"
+
+# Step 4: Progress tab
+- tapOn: "Progress"
+- assertVisible: "Analytics & Trends"
+
+# Step 5: Settings tab
+- tapOn: "Settings"
+- assertVisible: "Settings & About"
+- assertVisible: "Account & Cloud Backup"
+- assertVisible: "Unit Preferences"
+- assertVisible: "App Settings"
+- assertVisible: "About"
+
+# Step 6: Navigate back to Home
+- tapOn: "Home"
+- assertVisible: "Today's Focus"
+
+# Step 7: Verify bottom tab bar shows all tabs
+- assertVisible: "Home"
+- assertVisible: "Calculators"
+- assertVisible: "Workouts"
+- assertVisible: "Progress"
+- assertVisible: "Settings"

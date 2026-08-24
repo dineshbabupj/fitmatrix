@@ -1,4 +1,11 @@
-import { REVENUECAT_KEYS, IAP_PRODUCT_IDS, ENTITLEMENT_IDS, PRODUCT_DETAILS, IAPProduct } from './iapConfig';
+import Purchases, {
+  PurchasesOffering,
+  PurchasesPackage,
+  CustomerInfo,
+  LOG_LEVEL,
+} from 'react-native-purchases';
+import { Platform } from 'react-native';
+import { REVENUECAT_KEYS, ENTITLEMENT_IDS } from './iapConfig';
 
 export interface CustomerInfoState {
   activeEntitlements: string[];
@@ -8,87 +15,168 @@ export interface CustomerInfoState {
 
 class RevenueCatService {
   private isInitialized: boolean = false;
-  private currentUserId: string = 'guest_user';
-  private activeEntitlements: Set<string> = new Set();
-  private purchasedProducts: Set<string> = new Set();
 
   /**
-   * Initialize RevenueCat SDK for StoreKit 2 (iOS) and Google Play Billing 6+ (Android)
+   * Initialize RevenueCat SDK
+   * Call this once in your app's root component (e.g., App.tsx or _layout.tsx)
    */
   public async init(userId?: string): Promise<void> {
-    if (userId) this.currentUserId = userId;
+    if (this.isInitialized || Platform.OS === 'web') return;
 
-    console.log(`[RevenueCatService] Initialized with API Key (${REVENUECAT_KEYS.apiKey}) for User ID (${this.currentUserId})`);
-    this.isInitialized = true;
+    try {
+      Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+
+      const apiKey = REVENUECAT_KEYS.apiKey;
+      if (!apiKey) {
+        console.warn('[RevenueCatService] No API key found. Skipping initialization.');
+        return;
+      }
+
+      if (userId) {
+        await Purchases.configure({ apiKey, appUserID: userId });
+      } else {
+        await Purchases.configure({ apiKey });
+      }
+
+      this.isInitialized = true;
+      console.log('[RevenueCatService] Initialized successfully.');
+    } catch (e) {
+      console.warn('[RevenueCatService] Init skipped on non-native platform:', e);
+    }
   }
 
   /**
-   * Fetch available IAP products and offerings
+   * Link RevenueCat to the authenticated user.
+   * Call this after user signs in so purchases are tied to their account.
    */
-  public async getProducts(): Promise<IAPProduct[]> {
-    return Object.values(PRODUCT_DETAILS);
+  public async logIn(userId: string): Promise<void> {
+    if (!this.isInitialized || Platform.OS === 'web') return;
+    try {
+      await Purchases.logIn(userId);
+      console.log('[RevenueCatService] Logged in as user:', userId);
+    } catch (e) {
+      console.warn('[RevenueCatService] logIn failed:', e);
+    }
   }
 
   /**
-   * Execute product purchase (StoreKit / Google Play Billing)
+   * Unlink RevenueCat from current user.
+   * Call this on logout to reset identity.
    */
-  public async purchaseProduct(productId: string): Promise<{ success: boolean; customerInfo: CustomerInfoState }> {
-    console.log(`[RevenueCatService] Initiating purchase for product: ${productId}`);
-
-    const product = PRODUCT_DETAILS[productId];
-    if (!product) {
-      throw new Error(`Product ${productId} not found in configuration.`);
+  public async logOut(): Promise<void> {
+    if (!this.isInitialized || Platform.OS === 'web') return;
+    try {
+      await Purchases.logOut();
+      console.log('[RevenueCatService] Logged out.');
+    } catch (e) {
+      console.warn('[RevenueCatService] logOut failed:', e);
     }
+  }
 
-    // Grant entitlements based on product
-    this.purchasedProducts.add(productId);
-    if (productId === IAP_PRODUCT_IDS.removeAds) {
-      this.activeEntitlements.add(ENTITLEMENT_IDS.adsRemoved);
-    } else {
-      this.activeEntitlements.add(ENTITLEMENT_IDS.proAccess);
-      this.activeEntitlements.add(ENTITLEMENT_IDS.adsRemoved);
+  /**
+   * Fetch available offerings from RevenueCat dashboard
+   */
+  public async getOfferings(): Promise<PurchasesOffering | null> {
+    try {
+      const offerings = await Purchases.getOfferings();
+      return offerings.current ?? null;
+    } catch (error) {
+      console.error('[RevenueCatService] Failed to fetch offerings:', error);
+      return null;
     }
+  }
 
-    const info = this.getCustomerInfo();
-    console.log('[RevenueCatService] Purchase successful. Customer info updated:', info);
+  /**
+   * Purchase a specific package from an offering
+   */
+  public async purchasePackage(
+    pkg: PurchasesPackage
+  ): Promise<{ success: boolean; customerInfo: CustomerInfoState }> {
+    try {
+      const { customerInfo } = await Purchases.purchasePackage(pkg);
+      const info = this.mapCustomerInfo(customerInfo);
+      console.log('[RevenueCatService] Purchase successful:', info);
+      return { success: true, customerInfo: info };
+    } catch (error: any) {
+      if (error.userCancelled) {
+        console.log('[RevenueCatService] User cancelled purchase.');
+        return { success: false, customerInfo: this.getEmptyInfo() };
+      }
+      throw error;
+    }
+  }
 
+  /**
+   * Restore previous purchases (required by Apple & Google guidelines)
+   */
+  public async restorePurchases(): Promise<CustomerInfoState> {
+    try {
+      const customerInfo = await Purchases.restorePurchases();
+      const info = this.mapCustomerInfo(customerInfo);
+      console.log('[RevenueCatService] Restored purchases:', info);
+      return info;
+    } catch (error) {
+      console.error('[RevenueCatService] Restore failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check if a specific entitlement is currently active
+   */
+  public async isEntitlementActive(entitlementId: string): Promise<boolean> {
+    if (Platform.OS === 'web') return false;
+    try {
+      const customerInfo = await Purchases.getCustomerInfo();
+      return entitlementId in customerInfo.entitlements.active;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if user has Pro access
+   */
+  public async hasProAccess(): Promise<boolean> {
+    return this.isEntitlementActive(ENTITLEMENT_IDS.proAccess);
+  }
+
+  /**
+   * Check if ads are removed
+   */
+  public async hasAdsRemoved(): Promise<boolean> {
+    const pro = await this.isEntitlementActive(ENTITLEMENT_IDS.proAccess);
+    const adsRemoved = await this.isEntitlementActive(ENTITLEMENT_IDS.adsRemoved);
+    return pro || adsRemoved;
+  }
+
+  /**
+   * Get current customer info
+   */
+  public async getCustomerInfo(): Promise<CustomerInfoState> {
+    try {
+      const customerInfo = await Purchases.getCustomerInfo();
+      return this.mapCustomerInfo(customerInfo);
+    } catch {
+      return this.getEmptyInfo();
+    }
+  }
+
+  private mapCustomerInfo(info: CustomerInfo): CustomerInfoState {
     return {
-      success: true,
-      customerInfo: info,
+      activeEntitlements: Object.keys(info.entitlements.active),
+      allPurchasedProductIds: info.allPurchasedProductIdentifiers,
+      latestPurchaseDate: info.latestExpirationDate
+        ? new Date(info.latestExpirationDate).getTime()
+        : null,
     };
   }
 
-  /**
-   * Restore Purchases (Required by Apple StoreKit Review Guidelines)
-   */
-  public async restorePurchases(): Promise<CustomerInfoState> {
-    console.log(`[RevenueCatService] Restoring purchases for user: ${this.currentUserId}`);
-    
-    // Simulate query of App Store / Play Store receipt history
-    const info = this.getCustomerInfo();
-    return info;
-  }
-
-  /**
-   * Client-side Receipt Validation
-   */
-  public async validateReceipt(receiptToken: string): Promise<boolean> {
-    console.log(`[RevenueCatService] Validating receipt token: ${receiptToken.slice(0, 15)}...`);
-    return receiptToken.length > 0;
-  }
-
-  /**
-   * Check if a specific entitlement is active (e.g. 'pro_access' or 'ads_removed')
-   */
-  public isEntitlementActive(entitlementId: string): boolean {
-    return this.activeEntitlements.has(entitlementId);
-  }
-
-  public getCustomerInfo(): CustomerInfoState {
+  private getEmptyInfo(): CustomerInfoState {
     return {
-      activeEntitlements: Array.from(this.activeEntitlements),
-      allPurchasedProductIds: Array.from(this.purchasedProducts),
-      latestPurchaseDate: Date.now(),
+      activeEntitlements: [],
+      allPurchasedProductIds: [],
+      latestPurchaseDate: null,
     };
   }
 }

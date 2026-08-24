@@ -1,0 +1,51 @@
+# ═══════════════════════════════════════════════════════════════════════
+# 06 - Complete Onboarding Flow (Goal → Profile → First Win → Dashboard)
+# ═══════════════════════════════════════════════════════════════════════
+appId: com.trichy360media.fitmetrics
+---
+# Step 1: Goal Selection
+- assertVisible: "What's your main goal?"
+- assertVisible: "Lose Weight"
+- assertVisible: "Build Muscle"
+- assertVisible: "Stay Fit"
+
+# Select "Build Muscle" goal
+- tapOn: "Build Muscle"
+- assertVisible: "Quick Profile"
+
+# Step 2: Profile Setup
+- assertVisible: "Age"
+- assertVisible: "Weight (kg)"
+- assertVisible: "Male"
+- assertVisible: "Female"
+
+# Fill profile
+- tapOn: "Age"
+- inputText:
+    text: "28"
+    clearText: true
+- tapOn: "Weight (kg)"
+- inputText:
+    text: "82"
+    clearText: true
+- tapOn: "Male"
+- tapOn: "Continue"
+
+# Step 3: First Win / Celebration
+- assertVisible: "You're all set!"
+- assertVisible: "Start Quick Workout"
+
+# Skip to dashboard
+- tapOn: "Skip to dashboard"
+
+# Step 4: Verify Dashboard
+- assertVisible: "Today's Focus"
+- assertVisible: "Quick Log"
+- assertVisible: "Workout"
+- assertVisible: "Food"
+- assertVisible: "Water"
+- assertVisible: "Daily Progress"
+- assertVisible: "Calories"
+- assertVisible: "Protein"
+- assertVisible: "Steps"
+- assertVisible: "Water"

@@ -1,0 +1,38 @@
+# ═══════════════════════════════════════════════════════════════════════
+# 09 - Workout Logging Flow
+# ═══════════════════════════════════════════════════════════════════════
+# Tests: Workouts tab → Log Workout modal → Add exercises → Complete
+appId: com.trichy360media.fitmetrics
+---
+# Step 1: Navigate to Workouts tab
+- tapOn: "Workouts"
+- assertVisible: "Workout Log"
+
+# Step 2: Open Log Workout modal
+- tapOn: "Log Workout"
+- assertVisible: "Log Workout"
+
+# Step 3: Enter workout name
+- tapOn:
+    text: "Workout Name"
+    optional: true
+- inputText: "Push Day"
+
+# Step 4: Verify the workout form is visible
+- assertVisible: "Add Exercise"
+
+# Step 5: Add an exercise
+- tapOn: "Add Exercise"
+- assertVisible:
+    text: "Bench Press"
+    optional: true
+
+# Step 6: Close the modal
+- tapOn:
+    text: "×"
+    optional: true
+
+# Step 7: Navigate back to Home to verify dashboard still works
+- tapOn: "Home"
+- assertVisible: "Today's Focus"
+- assertVisible: "Daily Progress"

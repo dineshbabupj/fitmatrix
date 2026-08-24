@@ -6,6 +6,59 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../../src/theme/theme';
 
 export default function CalculatorsHubScreen() {
+  const premiumFeatures = [
+    {
+      id: 'meal-planner',
+      title: 'AI Meal Planner',
+      subtitle: 'Personalized Nutrition Plans',
+      description: 'Generates customized 7-day meal plans matching calorie limits and dietary options.',
+      icon: 'restaurant-outline' as const,
+      route: '/meal-planner' as const,
+      color: '#4CAF50',
+      tag: 'Pro AI',
+    },
+    {
+      id: 'symptom-checker',
+      title: 'AI Symptom Checker',
+      subtitle: 'Symptom Triage Coach',
+      description: 'Provides symptom risk evaluation via Gemini AI or step-by-step triage offline matrix.',
+      icon: 'medkit-outline' as const,
+      route: '/symptom-checker' as const,
+      color: '#FB8C00',
+      tag: 'Pro AI',
+    },
+    {
+      id: 'text-logger',
+      title: 'Text Macro Logger',
+      subtitle: 'Natural Language Logger',
+      description: 'Parses raw multi-line grocery lists or ingredients directly into estimated nutrition macros.',
+      icon: 'journal-outline' as const,
+      route: '/text-logger' as const,
+      color: '#00BCD4',
+      tag: 'Pro Tool',
+    },
+    {
+      id: 'safety-scanner',
+      title: 'Allergen & Safety Scanner',
+      subtitle: 'Barcode Risk Detector',
+      description: 'Scans grocery barcodes to check for food safety warnings, artificial additives, and allergens.',
+      icon: 'scan-outline' as const,
+      route: '/safety-scanner' as const,
+      color: '#E53935',
+      tag: 'Pro Scanner',
+    },
+    {
+      id: 'alternative-advisor',
+      title: 'Supermarket Alternatives',
+      subtitle: 'Nutri-Score Substitutes',
+      description: 'Queries similar products in the same food category to suggest healthier substitutes.',
+      icon: 'swap-horizontal-outline' as const,
+      route: '/alternative-advisor' as const,
+      color: '#9C27B0',
+      tag: 'Pro Guide',
+    },
+  ];
+
   const calculators = [
     {
       id: 'bmi',
@@ -62,39 +115,73 @@ export default function CalculatorsHubScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.pageTitle}>Health Calculators</Text>
-        <Text style={styles.headerSubtitle}>Select a health calculator to compute vital statistics:</Text>
+        <Text style={styles.pageTitle}>AI Health Assistant (Pro)</Text>
+        <Text style={styles.headerSubtitle}>Unlock advanced fitness features & daily automation:</Text>
 
-      {calculators.map((item) => (
-        <TouchableOpacity
-          key={item.id}
-          style={styles.card}
-          onPress={() => router.push(item.route)}
-          activeOpacity={0.8}
-        >
-          <View style={styles.cardHeader}>
-            <View style={[styles.iconWrapper, { backgroundColor: item.color + '22' }]}>
-              <Ionicons name={item.icon} size={28} color={item.color} />
-            </View>
-            <View style={styles.titleWrapper}>
-              <View style={styles.titleRow}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <View style={[styles.tag, { backgroundColor: item.color + '33' }]}>
-                  <Text style={[styles.tagText, { color: item.color }]}>{item.tag}</Text>
-                </View>
+        {premiumFeatures.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            style={styles.card}
+            onPress={() => router.push(item.route)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardHeader}>
+              <View style={[styles.iconWrapper, { backgroundColor: item.color + '22' }]}>
+                <Ionicons name={item.icon} size={28} color={item.color} />
               </View>
-              <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+              <View style={styles.titleWrapper}>
+                <View style={styles.titleRow}>
+                  <Text style={styles.cardTitle}>{item.title}</Text>
+                  <View style={[styles.tag, { backgroundColor: item.color + '33' }]}>
+                    <Text style={[styles.tagText, { color: item.color }]}>{item.tag}</Text>
+                  </View>
+                </View>
+                <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+              </View>
             </View>
-          </View>
 
-          <Text style={styles.cardDesc}>{item.description}</Text>
+            <Text style={styles.cardDesc}>{item.description}</Text>
 
-          <View style={styles.cardFooter}>
-            <Text style={[styles.actionText, { color: item.color }]}>Open Calculator</Text>
-            <Ionicons name="chevron-forward" size={18} color={item.color} />
-          </View>
-        </TouchableOpacity>
-      ))}
+            <View style={styles.cardFooter}>
+              <Text style={[styles.actionText, { color: item.color }]}>Unlock Feature</Text>
+              <Ionicons name="chevron-forward" size={18} color={item.color} />
+            </View>
+          </TouchableOpacity>
+        ))}
+
+        <Text style={[styles.pageTitle, { marginTop: theme.spacing.lg }]}>Standard Calculators</Text>
+        <Text style={styles.headerSubtitle}>Basic diagnostic health calculators:</Text>
+
+        {calculators.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            style={styles.card}
+            onPress={() => router.push(item.route)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardHeader}>
+              <View style={[styles.iconWrapper, { backgroundColor: item.color + '22' }]}>
+                <Ionicons name={item.icon} size={28} color={item.color} />
+              </View>
+              <View style={styles.titleWrapper}>
+                <View style={styles.titleRow}>
+                  <Text style={styles.cardTitle}>{item.title}</Text>
+                  <View style={[styles.tag, { backgroundColor: item.color + '33' }]}>
+                    <Text style={[styles.tagText, { color: item.color }]}>{item.tag}</Text>
+                  </View>
+                </View>
+                <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+              </View>
+            </View>
+
+            <Text style={styles.cardDesc}>{item.description}</Text>
+
+            <View style={styles.cardFooter}>
+              <Text style={[styles.actionText, { color: item.color }]}>Open Calculator</Text>
+              <Ionicons name="chevron-forward" size={18} color={item.color} />
+            </View>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );

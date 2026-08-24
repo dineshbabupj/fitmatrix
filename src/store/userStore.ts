@@ -10,6 +10,7 @@ export interface UserProfile {
   heightCm: number;
   weightKg: number;
   unitPreference: 'metric' | 'imperial';
+  goal: 'lose_weight' | 'build_muscle' | 'stay_fit';
 }
 
 export interface AuthState {
@@ -40,6 +41,7 @@ const initialProfile: UserProfile = {
   heightCm: 175,
   weightKg: 70,
   unitPreference: 'metric',
+  goal: 'stay_fit',
 };
 
 const initialAuth: AuthState = {

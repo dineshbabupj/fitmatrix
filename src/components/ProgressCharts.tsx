@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { CalculationRecord } from '../data/db';
 import { theme } from '../theme/theme';
+import { useUserStore } from '../store/userStore';
+import { PaywallModal } from './PaywallModal';
 import { adMobManager } from '../services/admob/adMobManager';
 
 const screenWidth = Dimensions.get('window').width - 32;
@@ -34,10 +36,12 @@ interface ProgressChartsProps {
 }
 
 export const ProgressCharts: React.FC<ProgressChartsProps> = ({ records }) => {
+  const isPremium = useUserStore((state) => state.isPremium);
   const [dateRange, setDateRange] = useState<DateRange>('30d');
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('BMI');
   const [selectedPoint, setSelectedPoint] = useState<SelectedPoint | null>(null);
-  const [isUnlocked, setIsUnlocked] = useState<boolean>(adMobManager.isPremiumFeatureUnlocked());
+  const [isUnlocked, setIsUnlocked] = useState<boolean>(isPremium || adMobManager.isPremiumFeatureUnlocked());
+  const [paywallVisible, setPaywallVisible] = useState<boolean>(false);
 
   const handleUnlockRewarded = () => {
     adMobManager.showRewardedAd(() => {
@@ -287,24 +291,40 @@ export const ProgressCharts: React.FC<ProgressChartsProps> = ({ records }) => {
         )}
       </View>
 
-      {/* Rewarded Ad Section: Watch Ad to unlock Premium Advanced Analytics */}
-      {!isUnlocked ? (
+      {/* Analytics Gating / Pro Badge */}
+      {!isUnlocked && !isPremium ? (
         <View style={styles.rewardedCard}>
-          <Ionicons name="gift-outline" size={28} color="#FFB74D" />
+          <Ionicons name="sparkles" size={26} color="#FFD700" />
           <View style={styles.rewardedInfo}>
             <Text style={styles.rewardedTitle}>Unlock Advanced Health Analytics</Text>
-            <Text style={styles.rewardedSub}>Watch a short 15-second sponsor video to reveal detailed trends.</Text>
+            <Text style={styles.rewardedSub}>Watch a quick sponsor video or upgrade to Pro for permanent access.</Text>
           </View>
-          <TouchableOpacity style={styles.rewardedBtn} onPress={handleUnlockRewarded} activeOpacity={0.8}>
-            <Text style={styles.rewardedBtnText}>Watch Ad</Text>
-          </TouchableOpacity>
+          <View style={{ gap: 6 }}>
+            <TouchableOpacity style={styles.proSmallBtn} onPress={() => setPaywallVisible(true)} activeOpacity={0.8}>
+              <Text style={styles.proSmallBtnText}>Go Pro</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.rewardedBtn} onPress={handleUnlockRewarded} activeOpacity={0.8}>
+              <Text style={styles.rewardedBtnText}>Watch Ad</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       ) : (
         <View style={styles.unlockedBadge}>
           <Ionicons name="checkmark-circle-outline" size={18} color={theme.colors.dark.primary} />
-          <Text style={styles.unlockedText}>Premium Health Analytics Unlocked 🎉</Text>
+          <Text style={styles.unlockedText}>
+            {isPremium ? 'FitMetrics Pro Analytics Active 👑' : 'Health Analytics Unlocked for Session 🎉'}
+          </Text>
         </View>
       )}
+
+      <PaywallModal
+        visible={paywallVisible}
+        onClose={() => setPaywallVisible(false)}
+        onSuccess={() => {
+          setIsUnlocked(true);
+          setPaywallVisible(false);
+        }}
+      />
 
       {/* Bar Chart Section */}
       <View style={styles.chartCard}>
@@ -493,16 +513,31 @@ const styles = StyleSheet.create({
     color: theme.colors.dark.onSurfaceVariant,
     marginTop: 2,
   },
-  rewardedBtn: {
-    backgroundColor: '#FFB74D',
+  proSmallBtn: {
+    backgroundColor: '#FFD700',
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 5,
     borderRadius: 16,
+    alignItems: 'center',
   },
-  rewardedBtnText: {
+  proSmallBtnText: {
     fontSize: 12,
     fontWeight: '800',
     color: '#000000',
+  },
+  rewardedBtn: {
+    backgroundColor: '#3E2F1B',
+    borderWidth: 1,
+    borderColor: '#FFB74D',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  rewardedBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FFB74D',
   },
   unlockedBadge: {
     flexDirection: 'row',

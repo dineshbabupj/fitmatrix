@@ -1,0 +1,66 @@
+﻿[
+  {
+    "id": "ex_001",
+    "name": "Barbell Bench Press",
+    "primaryMuscle": "Chest",
+    "secondaryMuscles": ["Triceps", "Shoulders"],
+    "equipment": "Barbell",
+    "mechanic": "Compound"
+  },
+  {
+    "id": "ex_002",
+    "name": "Squat",
+    "primaryMuscle": "Quadriceps",
+    "secondaryMuscles": ["Glutes", "Hamstrings", "Calves"],
+    "equipment": "Barbell",
+    "mechanic": "Compound"
+  },
+  {
+    "id": "ex_003",
+    "name": "Deadlift",
+    "primaryMuscle": "Hamstrings",
+    "secondaryMuscles": ["Glutes", "Lower Back", "Traps"],
+    "equipment": "Barbell",
+    "mechanic": "Compound"
+  },
+  {
+    "id": "ex_004",
+    "name": "Pull-up",
+    "primaryMuscle": "Lats",
+    "secondaryMuscles": ["Biceps", "Mid Back"],
+    "equipment": "Bodyweight",
+    "mechanic": "Compound"
+  },
+  {
+    "id": "ex_005",
+    "name": "Overhead Press",
+    "primaryMuscle": "Shoulders",
+    "secondaryMuscles": ["Triceps"],
+    "equipment": "Barbell",
+    "mechanic": "Compound"
+  },
+  {
+    "id": "ex_006",
+    "name": "Dumbbell Curl",
+    "primaryMuscle": "Biceps",
+    "secondaryMuscles": [],
+    "equipment": "Dumbbell",
+    "mechanic": "Isolation"
+  },
+  {
+    "id": "ex_007",
+    "name": "Triceps Pushdown",
+    "primaryMuscle": "Triceps",
+    "secondaryMuscles": [],
+    "equipment": "Cable",
+    "mechanic": "Isolation"
+  },
+  {
+    "id": "ex_008",
+    "name": "Leg Extension",
+    "primaryMuscle": "Quadriceps",
+    "secondaryMuscles": [],
+    "equipment": "Machine",
+    "mechanic": "Isolation"
+  }
+]

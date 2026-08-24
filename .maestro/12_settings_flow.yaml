@@ -1,0 +1,48 @@
+# ═══════════════════════════════════════════════════════════════════════
+# 12 - Settings Screen
+# ═══════════════════════════════════════════════════════════════════════
+# Tests: Unit preferences toggle, notification toggle, auto-save toggle,
+#         premium upgrade card, cloud sync, version info
+appId: com.trichy360media.fitmetrics
+---
+# Navigate to Settings
+- tapOn: "Settings"
+- assertVisible: "Settings"
+
+# ═══════ PART A: Premium Card ═══════
+- assertVisible: "Upgrade to Premium"
+- assertVisible: "Remove all ads"
+- assertVisible: "View Premium Plans"
+
+# ═══════ PART B: Account Section ═══════
+- assertVisible: "Account & Cloud Backup"
+- assertVisible: "Guest User (Offline Mode)"
+- assertVisible: "Sign In / Register"
+- assertVisible: "Cloud Data Sync"
+- assertVisible: "Sync Now"
+
+# ═══════ PART C: Unit Preferences ═══════
+- assertVisible: "Unit Preferences"
+- assertVisible: "Metric (cm, kg)"
+- assertVisible: "Imperial (ft/in, lbs)"
+
+# Toggle to Imperial
+- tapOn: "Imperial (ft/in, lbs)"
+# Toggle back to Metric
+- tapOn: "Metric (cm, kg)"
+
+# ═══════ PART D: App Settings ═══════
+- assertVisible: "App Settings"
+- assertVisible: "Daily Health Notifications"
+- assertVisible: "Auto-Save Calculations"
+
+# ═══════ PART E: Export & About ═══════
+- assertVisible: "Export & Data"
+- assertVisible: "Export PDF Health Report"
+- assertVisible: "About"
+- assertVisible: "FitMetrics Version 1.0.0"
+- assertVisible: "Medical Disclaimer"
+
+# ═══════ PART F: Navigate back to Home ═══════
+- tapOn: "Home"
+- assertVisible: "Today's Focus"

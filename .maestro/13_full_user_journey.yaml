@@ -1,0 +1,70 @@
+# ═══════════════════════════════════════════════════════════════════════
+# 13 - Full User Journey (End-to-End)
+# ═══════════════════════════════════════════════════════════════════════
+# Complete user journey: Onboarding → Dashboard → Calculator →
+# Workout → Food → Water → Progress → Settings → Auth
+appId: com.trichy360media.fitmetrics
+---
+# ═══════ Step 1: Onboarding ═══════
+- assertVisible: "What's your main goal?"
+- tapOn: "Stay Fit"
+- assertVisible: "Quick Profile"
+- tapOn: "Continue"
+- assertVisible: "You're all set!"
+- tapOn: "Skip to dashboard"
+
+# ═══════ Step 2: Dashboard ═══════
+- assertVisible: "Today's Focus"
+- assertVisible: "Quick Log"
+- assertVisible: "Daily Progress"
+- assertVisible: "Calories"
+- assertVisible: "Protein"
+- assertVisible: "Steps"
+- assertVisible: "Water"
+
+# ═══════ Step 3: Calculators ═══════
+- tapOn: "Calculators"
+- assertVisible: "BMI Calculator"
+- tapOn: "BMI Calculator"
+- tapOn: "Height (cm) *"
+- inputText:
+    text: "170"
+    clearText: true
+- tapOn: "Weight (kg) *"
+- inputText:
+    text: "65"
+    clearText: true
+- tapOn: "Calculate BMI"
+- assertVisible: "Your BMI Result"
+
+# ═══════ Step 4: Workouts ═══════
+- tapOn: "Workouts"
+- assertVisible: "Workout Log"
+
+# ═══════ Step 5: Water Tracking ═══════
+- tapOn: "Home"
+- tapOn: "Water"
+- assertVisible: "Hydration"
+- tapOn: "+250 ml"
+- assertVisible: "250 ml"
+- tapOn:
+    text: "←"
+    optional: true
+
+# ═══════ Step 6: Progress ═══════
+- tapOn: "Progress"
+- assertVisible: "Analytics & Trends"
+
+# ═══════ Step 7: Settings & Auth ═══════
+- tapOn: "Settings"
+- assertVisible: "Upgrade to Premium"
+- assertVisible: "Guest User (Offline Mode)"
+- tapOn: "Sign In / Register"
+- assertVisible: "FitMetrics Account"
+- assertVisible: "Continue with Google"
+- tapOn: "Continue as Guest"
+
+# ═══════ Step 8: Return to Home ═══════
+- tapOn: "Home"
+- assertVisible: "Today's Focus"
+- assertVisible: "Ready to crush it"

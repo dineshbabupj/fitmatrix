@@ -1,0 +1,50 @@
+# ═══════════════════════════════════════════════════════════════════════
+# 11 - Food & Water Tracking
+# ═══════════════════════════════════════════════════════════════════════
+# Tests: Home quick-log → Food screen → Water screen → Dashboard updates
+appId: com.trichy360media.fitmetrics
+---
+# ═══════ PART A: Water Tracking ═══════
+# Tap Water from Quick Log on Home
+- assertVisible: "Today's Focus"
+- tapOn: "Water"
+- assertVisible: "Hydration"
+- assertVisible: "ml daily goal"
+
+# Add water via quick-add buttons
+- tapOn: "+250 ml"
+- assertVisible: "250 ml"
+
+# Add more water
+- tapOn: "500 ml"
+- assertVisible: "750 ml"
+
+# Add small cup
+- tapOn: "100 ml"
+- assertVisible: "850 ml"
+
+# Go back to Home
+- tapOn:
+    text: "←"
+    optional: true
+- assertVisible: "Today's Focus"
+
+# ═══════ PART B: Food Quick Log Navigation ═══════
+- tapOn: "Food"
+- assertVisible:
+    text: "Food"
+    optional: true
+
+# Go back to Home
+- tapOn:
+    text: "←"
+    optional: true
+- assertVisible: "Today's Focus"
+
+# ═══════ PART C: Dashboard Progress Verification ═══════
+# Verify progress cards are still visible on Home
+- assertVisible: "Calories"
+- assertVisible: "Protein"
+- assertVisible: "Steps"
+- assertVisible: "Water"
+- assertVisible: "Daily Progress"
