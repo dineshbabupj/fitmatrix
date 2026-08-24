@@ -28,7 +28,7 @@
         "backgroundColor": "#4CAF50"
       },
       "package": "com.trichy360media.fitmetrics",
-      "versionCode": 36,
+      "versionCode": 37,
       "backgroundColor": "#121212",
       "googleServicesFile": "./google-services.json",
       "permissions": [
