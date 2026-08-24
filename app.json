@@ -28,7 +28,7 @@
         "backgroundColor": "#4CAF50"
       },
       "package": "com.trichy360media.fitmetrics",
-      "versionCode": 33,
+      "versionCode": 35,
       "backgroundColor": "#121212",
       "googleServicesFile": "./google-services.json",
       "permissions": [
@@ -70,8 +70,8 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 36,
-            "targetSdkVersion": 36,
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
             "kotlinVersion": "1.9.24"
           }
         }
