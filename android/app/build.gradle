@@ -114,7 +114,7 @@ android {
         applicationId 'com.trichy360media.fitmetrics'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 34
+        versionCode 36
         versionName "1.4.0"
     }
     signingConfigs {
