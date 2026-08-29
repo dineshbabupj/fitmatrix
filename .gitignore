@@ -26,4 +26,4 @@ dist-release/
 
 # EAS Local Credentials
 credentials.json
-android/keystores/
+keystores/
