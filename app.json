@@ -25,7 +25,7 @@
         "backgroundColor": "#4CAF50"
       },
       "package": "com.trichy360media.fitmetrics",
-      "versionCode": 66,
+      "versionCode": 73,
       "backgroundColor": "#121212",
       "googleServicesFile": "./google-services.json",
       "permissions": [
@@ -80,9 +80,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "cee9e720-86c1-4e88-a05a-b9ea6f992219"
+        "projectId": "f2c62afe-f1d8-45aa-b5ea-86dcc15ef3cb"
       }
     },
-    "owner": "ashmusics-team"
+    "owner": "dinstacks-team"
   }
 }
