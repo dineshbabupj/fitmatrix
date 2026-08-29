@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "project_number": "676155774371",
+    "project_id": "guyguygyg",
+    "storage_bucket": "guyguygyg.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676155774371:android:ba6e77d5938b101fbfb616",
+        "android_client_info": {
+          "package_name": "com.db.jallikattu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "676155774371-qbgco794iu7vv56uhu45bt83816196lv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8_8Z_ObhhxYDcGty25Y9hLkq2piGPzqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "676155774371-qbgco794iu7vv56uhu45bt83816196lv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676155774371:android:dfaacaefca3cc1ecbfb616",
+        "android_client_info": {
+          "package_name": "com.dbq.jallikattub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "676155774371-qbgco794iu7vv56uhu45bt83816196lv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8_8Z_ObhhxYDcGty25Y9hLkq2piGPzqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "676155774371-qbgco794iu7vv56uhu45bt83816196lv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676155774371:android:66f6d83966a7bdacbfb616",
+        "android_client_info": {
+          "package_name": "com.trichy360media.fitmetrics"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "676155774371-giplnsujlplqcn38812gq6dj5a9sbkhh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.trichy360media.fitmetrics",
+            "certificate_hash": "fcd686bf86e7e348950be5e6499e73a8da14284a"
+          }
+        },
+        {
+          "client_id": "676155774371-qbgco794iu7vv56uhu45bt83816196lv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8_8Z_ObhhxYDcGty25Y9hLkq2piGPzqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "676155774371-qbgco794iu7vv56uhu45bt83816196lv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
