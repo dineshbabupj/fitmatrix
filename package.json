@@ -7,7 +7,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "postinstall": "patch-package || exit 0; python3 patches/apply-patches.py || exit 0",
+    "postinstall": "patch-package || exit 0; node patches/apply-patches.js || exit 0",
     "test": "jest",
     "test:watch": "jest --watchAll"
   },
