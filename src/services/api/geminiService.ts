@@ -1,5 +1,5 @@
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || '';
-const MODEL_NAME = 'gemini-1.5-flash';
+const MODEL_NAME = 'gemini-3.6-flash';
 
 export interface SymptomReport {
   riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';

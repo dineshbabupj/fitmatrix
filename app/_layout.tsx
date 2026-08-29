@@ -13,6 +13,7 @@ import { useUserStore } from '../src/store/userStore';
 import { revenueCatService } from '../src/services/iap/revenueCatService';
 import { adMobManager } from '../src/services/admob/adMobManager';
 import { notificationService } from '../src/services/notifications/notificationService';
+import { healthSyncService } from '../src/services/health/healthSyncService';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
 
 const customDarkTheme = {
@@ -31,6 +32,8 @@ const customDarkTheme = {
 export default function RootLayout() {
   const [isDbReady, setIsDbReady] = React.useState(false);
   const hasCompletedOnboarding = useUserStore((state) => state.hasCompletedOnboarding);
+  const wearableConnected = useUserStore((state) => state.wearableConnected);
+  const setTodayHealthData = useUserStore((state) => state.setTodayHealthData);
 
   React.useEffect(() => {
     async function setup() {
@@ -68,24 +71,38 @@ export default function RootLayout() {
       } catch (e) {
         console.warn('Notification setup deferred:', e);
       }
+      // Fetch Wearable Data if connected
+      if (wearableConnected) {
+        try {
+          const healthData = await healthSyncService.fetchTodayData();
+          setTodayHealthData(healthData);
+        } catch (e) {
+          console.warn('Wearable sync failed:', e);
+        }
+      }
     }
     setup();
-  }, []);
+  }, [wearableConnected, setTodayHealthData]);
 
   // Handle deep links for auth callbacks (email magic link, Google OAuth)
   React.useEffect(() => {
-    // Handle URL that opened the app
-    const subscription = Linking.addEventListener('url', ({ url }) => {
+    const handleUrl = async (url: string) => {
       console.log('[RootLayout] Deep link URL:', url);
-      handleAuthDeepLink(url);
-    });
-
-    // Check if app was opened from a deep link
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        console.log('[RootLayout] Initial deep link URL:', url);
+      if (url.includes('google-auth') || url.includes('email-auth')) {
+        // Await full session exchange BEFORE navigating, prevents race condition
+        await handleAuthDeepLink(url);
+        router.replace('/(tabs)/settings');
+      } else {
         handleAuthDeepLink(url);
       }
+    };
+
+    // Handle URL that opened the app while running
+    const subscription = Linking.addEventListener('url', ({ url }) => handleUrl(url));
+
+    // Check if app was cold-started from a deep link
+    Linking.getInitialURL().then((url) => {
+      if (url) handleUrl(url);
     });
 
     return () => subscription.remove();

@@ -4,6 +4,7 @@ import * as Linking from 'expo-linking';
 import 'react-native-url-polyfill/auto';
 import { useUserAuthStore, UserProfileAuth } from '../../store/userAuthStore';
 import { revenueCatService } from '../iap/revenueCatService';
+import { HealthData } from '../health/healthSyncService';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -106,5 +107,46 @@ export async function handleAuthDeepLink(url: string) {
     }
   } catch (err) {
     console.error('[Supabase] Deep link handling error:', err);
+  }
+}
+
+/**
+ * Listen for ANY Supabase auth state change.
+ * This is the most reliable way to sync the auth store
+ * because it catches both deep link callbacks and token refreshes.
+ */
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('[Supabase] Auth state changed:', event, session?.user?.email);
+  if (session?.user) {
+    syncAuthStore(session.user);
+  } else if (event === 'SIGNED_OUT') {
+    useUserAuthStore.getState().setUser(null);
+  }
+});
+
+/**
+ * Bulk insert or update historical wearable data into Supabase.
+ */
+export async function insertWearableLogs(userId: string, logs: { date: string; data: HealthData }[]) {
+  if (!userId || logs.length === 0) return;
+  
+  const payload = logs.map(log => ({
+    user_id: userId,
+    date: log.date,
+    steps: log.data.steps,
+    sleep_hours: log.data.sleepHours,
+    heart_rate: log.data.heartRate,
+    calories_burned: log.data.caloriesBurned,
+  }));
+
+  try {
+    const { error } = await supabase.from('wearable_daily_logs').upsert(payload, { onConflict: 'user_id, date' });
+    if (error) {
+      console.error('[Supabase] Failed to insert wearable logs:', error.message);
+    } else {
+      console.log(`[Supabase] Successfully inserted ${payload.length} wearable logs.`);
+    }
+  } catch (err) {
+    console.error('[Supabase] Error inserting wearable logs:', err);
   }
 }

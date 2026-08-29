@@ -24,12 +24,18 @@ export interface UserStoreState {
   auth: AuthState;
   hasCompletedOnboarding: boolean;
   isPremium: boolean;
+  wearableConnected: boolean;
+  wearableTrialStartDate: string | null;
+  todayHealthData: { steps: number; caloriesBurned: number; sleepHours: number; heartRate: number; } | null;
   
   // Actions
   setProfile: (profileUpdates: Partial<UserProfile>) => void;
   setAuth: (authUpdates: Partial<AuthState>) => void;
   setHasCompletedOnboarding: (completed: boolean) => void;
   setPremiumStatus: (isPremium: boolean) => void;
+  setWearableConnected: (connected: boolean) => void;
+  setWearableTrialStartDate: (date: string | null) => void;
+  setTodayHealthData: (data: any) => void;
   logout: () => void;
 }
 
@@ -57,6 +63,9 @@ export const useUserStore = create<UserStoreState>()(
       auth: initialAuth,
       hasCompletedOnboarding: false,
       isPremium: false,
+      wearableConnected: false,
+      wearableTrialStartDate: null,
+      todayHealthData: null,
 
       setProfile: (profileUpdates) =>
         set((state) => ({
@@ -71,6 +80,9 @@ export const useUserStore = create<UserStoreState>()(
       setHasCompletedOnboarding: (hasCompletedOnboarding) => set({ hasCompletedOnboarding }),
 
       setPremiumStatus: (isPremium) => set({ isPremium }),
+      setWearableConnected: (wearableConnected) => set({ wearableConnected }),
+      setWearableTrialStartDate: (wearableTrialStartDate) => set({ wearableTrialStartDate }),
+      setTodayHealthData: (todayHealthData) => set({ todayHealthData }),
 
       logout: () =>
         set({
@@ -78,6 +90,9 @@ export const useUserStore = create<UserStoreState>()(
           auth: initialAuth,
           hasCompletedOnboarding: false,
           isPremium: false,
+          wearableConnected: false,
+          wearableTrialStartDate: null,
+          todayHealthData: null,
         }),
     }),
     {

@@ -10,6 +10,8 @@ import { useWaterStore } from '../../src/store/waterStore';
 import { healthService } from '../../src/services/health/healthService';
 import { AdBanner } from '../../src/components/AdBanner';
 import { PaywallModal } from '../../src/components/PaywallModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { checkAndPromptReview } from '../../src/services/reviewService';
 
 const AnimatedProgressBar = ({ progress, color }: { progress: number; color: string }) => {
   const [animatedWidth] = useState(new Animated.Value(0));
@@ -42,11 +44,20 @@ const AnimatedProgressBar = ({ progress, color }: { progress: number; color: str
 
 export default function HomeScreen() {
   const profile = useUserStore((state) => state.profile);
-  const { getTodayTotals } = useFoodStore();
+  
+  // Reactivity fixes: explicitly subscribe to logs/history arrays so the component re-renders
+  const foodLogs = useFoodStore((state) => state.logs);
+  const getTodayTotals = useFoodStore((state) => state.getTodayTotals);
   const totals = getTodayTotals();
-  const waterIntake = useWaterStore((state) => state.getTodayIntake());
+
+  const waterHistory = useWaterStore((state) => state.history);
+  const getTodayIntake = useWaterStore((state) => state.getTodayIntake);
+  const waterIntake = getTodayIntake();
   const waterGoal = useWaterStore((state) => state.dailyGoal);
   const isPremium = useUserStore((state) => state.isPremium);
+  const wearableConnected = useUserStore((state) => state.wearableConnected);
+  const todayHealthData = useUserStore((state) => state.todayHealthData);
+  
   const [paywallVisible, setPaywallVisible] = useState(false);
   const [steps, setSteps] = useState(0);
   const [stepSource, setStepSource] = useState<string>('mock');
@@ -56,6 +67,15 @@ export default function HomeScreen() {
     let mounted = true;
 
     const loadSteps = async () => {
+      // If wearable is connected, prefer global health data
+      if (wearableConnected && todayHealthData) {
+        if (mounted) {
+          setSteps(todayHealthData.steps);
+          setStepSource('health_connect');
+        }
+        return;
+      }
+      
       const data = await healthService.getStepsBestSource();
       if (mounted) {
         setSteps(data.steps);
@@ -79,9 +99,35 @@ export default function HomeScreen() {
     };
   }, []);
 
-  // Basic goals based on profile
-  const calorieGoal = profile.goal === 'lose_weight' ? 1800 : profile.goal === 'build_muscle' ? 2800 : 2200;
-  const proteinGoal = profile.weightKg ? profile.weightKg * 2 : 150;
+  // Basic goals based on profile (fallback)
+  const [calorieGoal, setCalorieGoal] = useState(profile.goal === 'lose_weight' ? 1800 : profile.goal === 'build_muscle' ? 2800 : 2200);
+  const [proteinGoal, setProteinGoal] = useState(profile.weightKg ? profile.weightKg * 2 : 150);
+
+  // Load dynamically calculated TDEE from Macro screen if available
+  useEffect(() => {
+    AsyncStorage.getItem('@fitmetrics_tdee_target').then(res => {
+      if (res) {
+        try {
+          const tdee = JSON.parse(res);
+          if (tdee.calories) setCalorieGoal(tdee.calories);
+          if (tdee.protein) setProteinGoal(tdee.protein);
+        } catch (e) {
+          console.error('Failed to parse TDEE target', e);
+        }
+      }
+    });
+  }, []);
+
+  // Calculate dynamic calorie goal (Base Goal + Wearable Active Calories)
+  const activeCalories = wearableConnected && todayHealthData ? todayHealthData.caloriesBurned : 0;
+  const dynamicCalorieGoal = Math.round(calorieGoal + activeCalories);
+
+  // Trigger In-App Review if daily step goal is reached
+  useEffect(() => {
+    if (steps >= 10000) {
+      checkAndPromptReview();
+    }
+  }, [steps]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -147,9 +193,14 @@ export default function HomeScreen() {
               <Ionicons name="flame" size={18} color="#FF9800" />
               <Text style={styles.progressTitle}>Calories</Text>
             </View>
-            <Text style={styles.progressValues}>{totals.calories} / {calorieGoal} kcal</Text>
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text style={styles.progressValues}>{totals.calories} / {dynamicCalorieGoal} kcal</Text>
+              {activeCalories > 0 && (
+                <Text style={{ fontSize: 10, color: '#FF9800', marginTop: 2 }}>+{activeCalories} from watch</Text>
+              )}
+            </View>
           </View>
-          <AnimatedProgressBar progress={totals.calories / calorieGoal} color="#FF9800" />
+          <AnimatedProgressBar progress={totals.calories / dynamicCalorieGoal} color="#FF9800" />
         </View>
 
         {/* Protein */}
@@ -169,7 +220,7 @@ export default function HomeScreen() {
           <View style={styles.progressHeader}>
             <View style={styles.progressTitleRow}>
               <Ionicons name="footsteps" size={18} color="#4CAF50" />
-              <Text style={styles.progressTitle}>Steps {stepSource === 'google_fit' ? '⌚' : stepSource === 'pedometer' ? '📱' : ''}</Text>
+              <Text style={styles.progressTitle}>Steps {stepSource === 'health_connect' || stepSource === 'google_fit' ? '⌚' : stepSource === 'pedometer' ? '📱' : ''}</Text>
             </View>
             <Text style={styles.progressValues}>{steps.toLocaleString()} / 10,000</Text>
           </View>

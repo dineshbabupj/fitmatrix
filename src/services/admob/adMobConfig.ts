@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 // Toggle between test ads and production ads
-export const USE_PRODUCTION_ADS = false; // Set to true for production builds
+export const USE_PRODUCTION_ADS = true; // Set to true for production builds
 
 // Google Official AdMob Test Ad Unit IDs (for development)
 export const ADMOB_TEST_UNITS = {
@@ -29,8 +29,8 @@ export const ADMOB_TEST_UNITS = {
 
 // Production AdMob Ad Unit IDs provided by User
 export const ADMOB_PROD_UNITS = {
-  banner: 'ca-app-pub-4795933061687216/2085128193',
-  interstitial: 'ca-app-pub-4795933061687216/6215944892',
+  banner: 'ca-app-pub-6421442503569449/1778408069',
+  interstitial: 'ca-app-pub-6421442503569449/2222472646',
   rewarded: 'ca-app-pub-4795933061687216/3589781559',
   rewardedInterstitial: 'ca-app-pub-4795933061687216/5676888843',
   native: 'ca-app-pub-4795933061687216/9962844136',

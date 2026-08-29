@@ -10,6 +10,7 @@ import {
   Alert,
   TextInput,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { InputCard } from '../components/InputCard';
 import { storage } from '../data/storage';
@@ -109,6 +110,7 @@ export const MacroScreen = () => {
         category: `Goal: ${goal.toUpperCase()} (P:${macroRes.proteinGrams}g, C:${macroRes.carbsGrams}g, F:${macroRes.fatGrams}g)`,
         date: Date.now(),
       });
+      await AsyncStorage.setItem('@fitmetrics_tdee_target', macroRes.targetCalories.toString());
     } catch (e) {
       console.warn('Failed to persist Macro calculation:', e);
     }

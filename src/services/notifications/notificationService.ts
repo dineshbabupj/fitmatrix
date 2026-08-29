@@ -14,6 +14,7 @@ Notifications.setNotificationHandler({
 const NOTIFICATION_KEYS = {
   workoutReminder: 'fitmetrics_workout_reminder_id',
   waterReminder: 'fitmetrics_water_reminder_id',
+  mealReminder: 'fitmetrics_meal_reminder_ids',
   permissionsGranted: 'fitmetrics_notif_permissions',
 };
 
@@ -146,6 +147,64 @@ class NotificationService {
   }
 
   /**
+   * Schedule daily meal reminders (Breakfast 8AM, Lunch 1PM, Dinner 7PM)
+   */
+  async scheduleMealReminders(): Promise<void> {
+    if (Platform.OS === 'web') return;
+
+    try {
+      await this.cancelMealReminders();
+
+      const meals = [
+        { hour: 8, title: '🍳 Breakfast Time', body: 'Start your day right! Check your meal plan for today\'s breakfast.' },
+        { hour: 13, title: '🥗 Lunch Time', body: 'Time to refuel! Your healthy lunch is waiting in the meal planner.' },
+        { hour: 19, title: '🍲 Dinner Time', body: 'Finish the day strong with your planned dinner.' },
+      ];
+
+      const ids: string[] = [];
+
+      for (const meal of meals) {
+        const id = await Notifications.scheduleNotificationAsync({
+          content: {
+            title: meal.title,
+            body: meal.body,
+            sound: true,
+          },
+          trigger: {
+            hour: meal.hour,
+            minute: 0,
+            repeats: true,
+          } as any,
+        });
+        ids.push(id);
+      }
+
+      await AsyncStorage.setItem(NOTIFICATION_KEYS.mealReminder, JSON.stringify(ids));
+      console.log('[NotificationService] Meal reminders scheduled:', ids.length, 'notifications');
+    } catch (e) {
+      console.warn('[NotificationService] Schedule meal reminders error:', e);
+    }
+  }
+
+  /**
+   * Cancel meal reminders
+   */
+  async cancelMealReminders(): Promise<void> {
+    try {
+      const existing = await AsyncStorage.getItem(NOTIFICATION_KEYS.mealReminder);
+      if (existing) {
+        const ids: string[] = JSON.parse(existing);
+        for (const id of ids) {
+          await Notifications.cancelScheduledNotificationAsync(id);
+        }
+        await AsyncStorage.removeItem(NOTIFICATION_KEYS.mealReminder);
+      }
+    } catch (e) {
+      console.warn('[NotificationService] Cancel meal reminders error:', e);
+    }
+  }
+
+  /**
    * Cancel all scheduled notifications
    */
   async cancelAll(): Promise<void> {
@@ -153,6 +212,7 @@ class NotificationService {
       await Notifications.cancelAllScheduledNotificationsAsync();
       await AsyncStorage.removeItem(NOTIFICATION_KEYS.workoutReminder);
       await AsyncStorage.removeItem(NOTIFICATION_KEYS.waterReminder);
+      await AsyncStorage.removeItem(NOTIFICATION_KEYS.mealReminder);
       console.log('[NotificationService] All notifications cancelled.');
     } catch (e) {
       console.warn('[NotificationService] Cancel all error:', e);

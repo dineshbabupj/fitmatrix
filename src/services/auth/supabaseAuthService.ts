@@ -25,7 +25,7 @@ class SupabaseAuthService {
     if (!GoogleSignin) return; // Skip in Expo Go
     try {
       GoogleSignin.configure({
-        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || '676155774371-gl5e6f7qh4l3ggc1lu54pug4brtajs8r.apps.googleusercontent.com',
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || '676155774371-kel8p8hevkld59l4k7n0k7l47pdo8fjq.apps.googleusercontent.com',
         scopes: ['profile', 'email'],
       });
     } catch (error) {

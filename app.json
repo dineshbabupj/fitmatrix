@@ -13,14 +13,11 @@
       "backgroundColor": "#121212"
     },
     "ios": {
-      "supportsTablet": true,
       "bundleIdentifier": "com.trichy360media.fitmetrics",
       "infoPlist": {
-        "NSMotionUsageDescription": "FitMetrics requires motion permission to count your daily steps."
-      },
-      "associatedDomains": [
-        "applinks:fitmetrics.app"
-      ]
+        "NSHealthShareUsageDescription": "FitMetrics uses Health data to sync your steps, sleep, and heart rate for AI insights.",
+        "NSHealthUpdateUsageDescription": "FitMetrics saves your calculated activities to Apple Health."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +25,7 @@
         "backgroundColor": "#4CAF50"
       },
       "package": "com.trichy360media.fitmetrics",
-      "versionCode": 37,
+      "versionCode": 62,
       "backgroundColor": "#121212",
       "googleServicesFile": "./google-services.json",
       "permissions": [
@@ -70,8 +67,9 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
+            "minSdkVersion": 26,
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
             "kotlinVersion": "1.9.24"
           }
         }
@@ -82,9 +80,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "6eaf52cf-cb6f-4e32-a31b-51b9c96c809b"
+        "projectId": "cee9e720-86c1-4e88-a05a-b9ea6f992219"
       }
     },
-    "owner": "kloolps-team"
+    "owner": "ashmusics-team"
   }
 }

@@ -10,7 +10,7 @@ import { theme } from '../theme/theme';
 import { useWaterStore } from '../store/useWaterStore';
 import { useMealStore } from '../store/mealStore';
 import { MealTrackerModal } from '../components/MealTrackerModal';
-import { MuscleHeatmap } from '../components/MuscleHeatmap';
+
 import { WeeklyAISummaryCard } from '../components/WeeklyAISummaryCard';
 import { WeatherWidget } from '../components/WeatherWidget';
 import * as Notifications from 'expo-notifications';
@@ -214,8 +214,6 @@ export const ProgressScreen = () => {
       {/* Weekly AI Summary Report (🔒 Premium) */}
       <WeeklyAISummaryCard />
 
-      {/* Muscle Recovery Heatmap (🔒 Premium) */}
-      <MuscleHeatmap />
 
       {/* Water Tracker Section */}
       <View style={styles.card}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,16 @@ import {
   TextInput,
   ActivityIndicator,
   Alert,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { geminiService, SymptomReport } from '../../../src/services/api/geminiService';
 import { theme } from '../../../src/theme/theme';
+
+const DISCLAIMER_ACCEPTED_KEY = 'symptom_checker_disclaimer_v1';
 
 type Mode = 'chat' | 'wizard';
 
@@ -21,12 +26,25 @@ export default function SymptomCheckerScreen() {
   const [symptomText, setSymptomText] = useState('');
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<SymptomReport | null>(null);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
 
   // Wizard state
   const [wizardStep, setWizardStep] = useState(1);
   const [primarySymptom, setPrimarySymptom] = useState('headache');
   const [duration, setDuration] = useState('less_24h');
   const [severeSigns, setSevereSigns] = useState<string[]>([]);
+
+  // Show disclaimer popup on first visit
+  useEffect(() => {
+    AsyncStorage.getItem(DISCLAIMER_ACCEPTED_KEY).then((val) => {
+      if (!val) setShowDisclaimer(true);
+    });
+  }, []);
+
+  const handleAcceptDisclaimer = async () => {
+    await AsyncStorage.setItem(DISCLAIMER_ACCEPTED_KEY, 'accepted');
+    setShowDisclaimer(false);
+  };
 
   const handleAiConsult = async () => {
     if (!symptomText.trim()) {
@@ -98,6 +116,39 @@ export default function SymptomCheckerScreen() {
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: 'AI Symptom Checker' }} />
+
+      {/* ⚠️ FIRST-TIME DISCLAIMER POPUP — required by Google Play Health policy */}
+      <Modal visible={showDisclaimer} transparent animationType="fade">
+        <Pressable style={styles.modalOverlay} onPress={() => {}}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalIconRow}>
+              <Ionicons name="medical" size={36} color="#FFA000" />
+            </View>
+            <Text style={styles.modalTitle}>Medical Disclaimer</Text>
+            <Text style={styles.modalBody}>
+              <Text style={styles.modalBold}>FitMetrics does not provide medical advice.</Text>
+              {'\n\n'}The AI Symptom Checker is designed for{' '}
+              <Text style={styles.modalBold}>general wellness guidance only</Text> and is{' '}
+              <Text style={styles.modalBold}>NOT a substitute</Text> for professional medical advice,
+              diagnosis, or treatment.{'\n\n'}
+              Always consult a qualified healthcare professional for any health concerns.
+            </Text>
+            <TouchableOpacity style={styles.modalAcceptBtn} onPress={handleAcceptDisclaimer} activeOpacity={0.85}>
+              <Ionicons name="checkmark-circle" size={20} color="#121212" />
+              <Text style={styles.modalAcceptText}>I Understand — Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* ⚠️ PERSISTENT MEDICAL DISCLAIMER BANNER */}
+      <View style={styles.disclaimerBanner}>
+        <Ionicons name="warning-outline" size={18} color="#FFA000" />
+        <Text style={styles.disclaimerText}>
+          <Text style={styles.disclaimerBold}>Not a substitute for medical advice.</Text>
+          {' '}Always consult a qualified healthcare professional for medical advice, diagnosis, or treatment.
+        </Text>
+      </View>
 
       {/* Mode Selector */}
       <View style={styles.modeTabs}>
@@ -589,11 +640,26 @@ const styles = StyleSheet.create({
     borderRadius: theme.shapes.medium,
     marginTop: theme.spacing.sm,
   },
+  disclaimerBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    backgroundColor: '#2D2200',
+    borderLeftWidth: 3,
+    borderLeftColor: '#FFA000',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginHorizontal: 0,
+  },
   disclaimerText: {
     flex: 1,
-    fontSize: 10.5,
-    color: theme.colors.dark.outline,
-    lineHeight: 14,
+    fontSize: 11.5,
+    color: '#FFD54F',
+    lineHeight: 16,
+  },
+  disclaimerBold: {
+    fontWeight: '700',
+    color: '#FFA000',
   },
   restartBtn: {
     flexDirection: 'row',
@@ -610,5 +676,65 @@ const styles = StyleSheet.create({
     color: theme.colors.dark.onSurfaceVariant,
     fontSize: 13,
     fontWeight: '600',
+  },
+  // ── Disclaimer Modal ──────────────────────────────────
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  modalCard: {
+    backgroundColor: '#1E1E1E',
+    borderRadius: 20,
+    padding: 24,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#FFA00044',
+    alignItems: 'center',
+  },
+  modalIconRow: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#2D2200',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFA000',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  modalBody: {
+    fontSize: 14,
+    color: '#CCCCCC',
+    lineHeight: 21,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  modalBold: {
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  modalAcceptBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#FFA000',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    width: '100%',
+    justifyContent: 'center',
+  },
+  modalAcceptText: {
+    color: '#121212',
+    fontSize: 15,
+    fontWeight: '700',
   },
 });

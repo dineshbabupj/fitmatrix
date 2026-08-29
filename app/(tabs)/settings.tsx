@@ -8,6 +8,7 @@ import {
   Switch,
   Alert,
 } from 'react-native';
+import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../../src/theme/theme';
@@ -139,7 +140,24 @@ export default function SettingsTab() {
         </View>
       </View>
 
-      {/* Unit System Preferences */}
+      {/* Integrations */}
+      <Text style={styles.sectionHeader}>Integrations</Text>
+      <View style={styles.card}>
+        <View style={styles.settingRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.settingLabel}>Smartwatch & Health Sync</Text>
+            <Text style={styles.settingDesc}>Connect Google Fit / Health Connect for steps, sleep & HR</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.actionIconBtn}
+            onPress={() => router.push('/integrations')}
+          >
+            <Ionicons name="watch-outline" size={24} color={theme.colors.dark.primary} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Unit Preferences */}
       <Text style={styles.sectionHeader}>Unit Preferences</Text>
       <View style={styles.card}>
         <Text style={styles.settingLabel}>Default Unit System</Text>
@@ -412,5 +430,10 @@ const styles = StyleSheet.create({
     color: '#4CAF50',
     fontWeight: '700',
     fontSize: 12,
+  },
+  actionIconBtn: {
+    padding: 8,
+    borderRadius: theme.shapes.medium,
+    backgroundColor: theme.colors.dark.surfaceVariant,
   },
 });

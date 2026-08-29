@@ -112,7 +112,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
               <Ionicons name="sparkles" size={40} color={theme.colors.dark.primary} />
               <Text style={styles.title}>Unlock FitMetrics Pro</Text>
               <Text style={styles.subtitle}>
-                Get unlimited access to AI Coach, Barcode Scanner, Heatmaps, PDF Export & more.
+                Get unlimited access to AI Coach, Barcode Scanner, PDF Export & more.
               </Text>
             </View>
 
@@ -122,7 +122,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ visible, onClose, on
                 'Remove All Banner, Interstitial & Native Ads',
                 'AI Progressive Overload Coach',
                 'Barcode Food Scanner',
-                'Muscle Recovery Heatmap',
+                'AI Meal Planner & Symptom Checker',
                 'PDF Progress Reports',
                 'Unlimited Cloud Sync',
               ].map((feature, i) => (

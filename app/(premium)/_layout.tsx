@@ -10,7 +10,12 @@ export default function PremiumLayout() {
   const { isPremium, setPremiumStatus } = useUserStore();
   const [paywallVisible, setPaywallVisible] = useState(false);
 
+  // TESTING: Force unlock premium for Expo Go testing
   useEffect(() => {
+    if (__DEV__) {
+      setPremiumStatus(true);
+      return;
+    }
     if (!isPremium) {
       setPaywallVisible(true);
     }

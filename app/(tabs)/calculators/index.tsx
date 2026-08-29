@@ -27,37 +27,8 @@ export default function CalculatorsHubScreen() {
       color: '#FB8C00',
       tag: 'Pro AI',
     },
-    {
-      id: 'text-logger',
-      title: 'Text Macro Logger',
-      subtitle: 'Natural Language Logger',
-      description: 'Parses raw multi-line grocery lists or ingredients directly into estimated nutrition macros.',
-      icon: 'journal-outline' as const,
-      route: '/text-logger' as const,
-      color: '#00BCD4',
-      tag: 'Pro Tool',
-    },
-    {
-      id: 'safety-scanner',
-      title: 'Allergen & Safety Scanner',
-      subtitle: 'Barcode Risk Detector',
-      description: 'Scans grocery barcodes to check for food safety warnings, artificial additives, and allergens.',
-      icon: 'scan-outline' as const,
-      route: '/safety-scanner' as const,
-      color: '#E53935',
-      tag: 'Pro Scanner',
-    },
-    {
-      id: 'alternative-advisor',
-      title: 'Supermarket Alternatives',
-      subtitle: 'Nutri-Score Substitutes',
-      description: 'Queries similar products in the same food category to suggest healthier substitutes.',
-      icon: 'swap-horizontal-outline' as const,
-      route: '/alternative-advisor' as const,
-      color: '#9C27B0',
-      tag: 'Pro Guide',
-    },
   ];
+
 
   const calculators = [
     {
