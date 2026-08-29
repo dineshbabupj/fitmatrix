@@ -25,7 +25,7 @@
         "backgroundColor": "#4CAF50"
       },
       "package": "com.trichy360media.fitmetrics",
-      "versionCode": 64,
+      "versionCode": 66,
       "backgroundColor": "#121212",
       "googleServicesFile": "./google-services.json",
       "permissions": [
@@ -68,7 +68,7 @@
         {
           "android": {
             "minSdkVersion": 26,
-            "compileSdkVersion": 36,
+            "compileSdkVersion": 35,
             "targetSdkVersion": 36,
             "kotlinVersion": "1.9.24"
           }
