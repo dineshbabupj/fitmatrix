@@ -1,32 +1,31 @@
 {
-    "cli":  {
-                "version":  "\u003e= 7.0.0"
-            },
-    "build":  {
-                  "development":  {
-                                      "developmentClient":  true,
-                                      "distribution":  "internal"
-                                  },
-                  "preview":  {
-                                  "distribution":  "internal"
-                              },
-                  "production":  {
-                                     "autoIncrement":  true,
-                                     "ios":  {
-                                                 "image":  "latest"
-                                             },
-                                     "android":  {
-                                                     "buildType":  "app-bundle"
-                                                 },
-                                     "env":  {
-                                                 "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD":  "1",
-                                                 "PUPPETEER_SKIP_DOWNLOAD":  "true"
-                                             }
-                                 }
-              },
-    "submit":  {
-                   "production":  {
-
-                                  }
-               }
+  "cli": {
+    "version": ">= 7.0.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "credentialsSource": "local",
+      "autoIncrement": true,
+      "ios": {
+        "image": "latest"
+      },
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
+        "PUPPETEER_SKIP_DOWNLOAD": "true"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
 }
